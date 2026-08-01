@@ -1,0 +1,51 @@
+---
+import { projects } from "../data/projects";
+---
+
+<section id="projects" class="section">
+  <div class="container">
+    <p class="eyebrow">Dự án</p>
+    <h2>Một số sản phẩm nổi bật</h2>
+
+    <div class="card-grid">
+      {
+        projects.map((project) => (
+          <article class="card project-card">
+            <div>
+              <h3>{project.name}</h3>
+              <p>{project.description}</p>
+            </div>
+
+            <ul class="tag-list" aria-label={`Công nghệ của ${project.name}`}>
+              {project.technologies.map((technology) => (
+                <li>{technology}</li>
+              ))}
+            </ul>
+
+            <div class="project-card__links">
+              {project.repository && (
+                <a
+                  href={project.repository}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Source code
+                </a>
+              )}
+
+              {project.demo && (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Live demo
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

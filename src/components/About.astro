@@ -1,0 +1,17 @@
+---
+import { profile } from "../data/profile";
+---
+
+<section id="about" class="section section--muted">
+  <div class="container split-section">
+    <div>
+      <p class="eyebrow">Về tôi</p>
+      <h2>Phát triển sản phẩm rõ ràng và bền vững</h2>
+    </div>
+
+    <div class="prose">
+      {profile.about.map((paragraph) => <p>{paragraph}</p>)}
+      <p><strong>Địa điểm:</strong> {profile.location}</p>
+    </div>
+  </div>
+</section>

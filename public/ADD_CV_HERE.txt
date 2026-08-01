@@ -1,0 +1,2 @@
+Đặt file CV của bạn tại public/cv.pdf.
+Nếu chưa có CV, hãy xóa hoặc để trống thuộc tính cvPath trong src/data/profile.ts.

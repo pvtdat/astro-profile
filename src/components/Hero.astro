@@ -1,0 +1,44 @@
+---
+import { profile } from "../data/profile";
+
+const base = import.meta.env.BASE_URL;
+const avatarPath = `${base}${profile.avatar}`;
+const cvPath = profile.cvPath ? `${base}${profile.cvPath}` : undefined;
+---
+
+<section id="home" class="hero container section">
+  <div class="hero__content">
+    <p class="eyebrow">{profile.greeting}</p>
+    <h1>{profile.name}</h1>
+    <p class="hero__position">{profile.position}</p>
+    <p class="hero__summary">{profile.summary}</p>
+
+    <div class="hero__actions">
+      <a class="button button--primary" href="#projects">Xem dự án</a>
+
+      {
+        cvPath && (
+          <a
+            class="button button--secondary"
+            href={cvPath}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Xem CV
+          </a>
+        )
+      }
+    </div>
+  </div>
+
+  <div class="hero__visual">
+    <img
+      class="hero__avatar"
+      src={avatarPath}
+      alt={`Ảnh đại diện của ${profile.name}`}
+      width="520"
+      height="520"
+      loading="eager"
+    />
+  </div>
+</section>

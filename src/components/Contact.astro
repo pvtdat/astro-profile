@@ -1,0 +1,31 @@
+---
+import { profile } from "../data/profile";
+---
+
+<section id="contact" class="section section--accent">
+  <div class="container contact-panel">
+    <div>
+      <p class="eyebrow">Liên hệ</p>
+      <h2>Hãy cùng xây dựng một sản phẩm hữu ích</h2>
+      <p>
+        Bạn có thể liên hệ với tôi qua email hoặc các mạng xã hội bên dưới.
+      </p>
+    </div>
+
+    <div class="contact-panel__actions">
+      <a class="button button--light" href={`mailto:${profile.email}`}>
+        {profile.email}
+      </a>
+
+      <div class="social-links">
+        {
+          profile.socials.map((social) => (
+            <a href={social.url} target="_blank" rel="noopener noreferrer">
+              {social.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

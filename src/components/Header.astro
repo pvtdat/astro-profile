@@ -1,0 +1,27 @@
+---
+const base = import.meta.env.BASE_URL;
+
+const navigationItems = [
+  { label: "Giới thiệu", href: "#about" },
+  { label: "Kỹ năng", href: "#skills" },
+  { label: "Kinh nghiệm", href: "#experience" },
+  { label: "Dự án", href: "#projects" },
+  { label: "Liên hệ", href: "#contact" },
+];
+---
+
+<header class="site-header">
+  <nav class="container navigation" aria-label="Điều hướng chính">
+    <a class="logo" href={base} aria-label="Về trang chủ">NA.</a>
+
+    <ul class="navigation__list">
+      {
+        navigationItems.map((item) => (
+          <li>
+            <a href={`${base}${item.href}`}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>

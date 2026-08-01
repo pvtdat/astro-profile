@@ -1,0 +1,23 @@
+---
+import { skillGroups } from "../data/skills";
+---
+
+<section id="skills" class="section">
+  <div class="container">
+    <p class="eyebrow">Kỹ năng</p>
+    <h2>Công nghệ thường sử dụng</h2>
+
+    <div class="card-grid card-grid--three">
+      {
+        skillGroups.map((group) => (
+          <article class="card">
+            <h3>{group.title}</h3>
+            <ul class="tag-list" aria-label={`Kỹ năng ${group.title}`}>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
