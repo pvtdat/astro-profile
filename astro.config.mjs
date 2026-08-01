@@ -6,5 +6,5 @@ const isUserSite = repositoryName === `${ownerName}.github.io`;
 
 export default defineConfig({
   site: ownerName ? `https://${ownerName}.github.io` : "http://localhost:4321",
-  base: repositoryName && !isUserSite ? `/${repositoryName}` : "/",
+  base: repositoryName && !isUserSite ? `/${repositoryName}/` : "/",
 });
