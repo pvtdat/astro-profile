@@ -13,7 +13,15 @@ import { skillGroups } from "../data/skills";
           <article class="card">
             <h3>{group.title}</h3>
             <ul class="tag-list" aria-label={`Kỹ năng ${group.title}`}>
-              {group.items.map((item) => <li>{item}</li>)}
+              {group.items.map((item) => (
+                <li
+                  class:list={{
+                    "tag-list__item--core": group.coreSkills?.includes(item),
+                  }}
+                >
+                  {item}
+                </li>
+              ))}
             </ul>
           </article>
         ))

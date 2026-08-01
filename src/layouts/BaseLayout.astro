@@ -6,12 +6,13 @@ interface Props {
   description?: string;
 }
 
-const {
-  title,
-  description = "Personal portfolio built with Astro",
-} = Astro.props;
+const { title, description = "Personal portfolio built with Astro" } =
+  Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const canonicalURL = new URL(
+  Astro.url.pathname,
+  Astro.site ?? Astro.url.origin,
+);
 const faviconPath = `${import.meta.env.BASE_URL}favicon.svg`;
 ---
 
@@ -30,7 +31,12 @@ const faviconPath = `${import.meta.env.BASE_URL}favicon.svg`;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <title>{title}</title>
   </head>
 
