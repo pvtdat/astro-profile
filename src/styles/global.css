@@ -325,13 +325,13 @@ h3 {
 }
 
 .hero__avatar {
-  height: min(70vh, 460px);
-  width: auto;
   max-width: 100%;
   margin-inline: auto;
   border: 1px solid rgb(103 232 249 / 28%);
   border-radius: 36px;
   box-shadow: var(--shadow);
+  max-width: 100%;
+  height: auto;
 }
 
 .split-section {
