@@ -12,16 +12,185 @@ const navigationItems = [
 
 <header class="site-header">
   <nav class="container navigation" aria-label="Điều hướng chính">
-    <a class="logo" href={base} aria-label="Về trang chủ">NA.</a>
+    <a class="logo" href={base} aria-label="Về trang chủ">{`<DP />`}</a>
 
     <ul class="navigation__list">
       {
         navigationItems.map((item) => (
-          <li>
-            <a href={`${base}${item.href}`}>{item.label}</a>
+          <li
+            class="navigation__item"
+            data-nav-item
+            data-section={item.href.slice(1)}
+          >
+            <a href={`${base}${item.href}`}>
+              <span>{item.label}</span>
+              <span class="navigation__highlight" aria-hidden="true">
+                <svg
+                  width="80"
+                  height="10"
+                  viewBox="0 0 80 10"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill="currentColor"
+                    d="
+                      M1 5
+                      C18 7.4 62 7.4 79 5
+                      C62 4.2 18 4.2 1 5
+                      Z
+                    "
+                  />
+                </svg>
+              </span>
+            </a>
           </li>
         ))
       }
     </ul>
   </nav>
 </header>
+
+<script>
+  const navItems = Array.from(document.querySelectorAll("[data-nav-item]"));
+
+  if (navItems.length > 0) {
+    let currentActiveId = window.location.hash.replace("#", "");
+    const headerOffset = 96;
+    const targetLineOffset = 24;
+    const contactSectionId = "contact";
+    const footerElement = document.querySelector("footer.site-footer");
+
+    if (!currentActiveId) {
+      currentActiveId = navItems[0]?.getAttribute("data-section") ?? "";
+    }
+
+    const applyActiveState = () => {
+      navItems.forEach((item) => {
+        const link = item.querySelector("a");
+        const isActive = item.getAttribute("data-section") === currentActiveId;
+
+        item.classList.toggle("is-active", isActive);
+        if (link) {
+          if (isActive) {
+            link.setAttribute("aria-current", "true");
+          } else {
+            link.removeAttribute("aria-current");
+          }
+        }
+      });
+    };
+
+    applyActiveState();
+
+    const updateActiveSectionByViewport = () => {
+      if (navItems.length === 0) return;
+
+      if (footerElement) {
+        const footerRect = footerElement.getBoundingClientRect();
+        const footerVisible =
+          footerRect.top <= window.innerHeight - headerOffset;
+        const nearPageBottom =
+          window.scrollY + window.innerHeight >=
+          document.documentElement.scrollHeight - 2;
+
+        if (footerVisible || nearPageBottom) {
+          if (currentActiveId !== contactSectionId) {
+            currentActiveId = contactSectionId;
+            applyActiveState();
+          }
+          return;
+        }
+      }
+
+      const targetLine = window.scrollY + headerOffset + targetLineOffset;
+      let nearestId = "";
+      let foundPastSection = false;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+
+      navItems.forEach((item) => {
+        const sectionId = item.getAttribute("data-section");
+        if (!sectionId) return;
+        const sectionElement = document.getElementById(sectionId);
+        if (!sectionElement) return;
+
+        const sectionTop = sectionElement.offsetTop;
+        const isPastTargetLine = sectionTop <= targetLine;
+
+        if (!isPastTargetLine) return;
+
+        foundPastSection = true;
+
+        const distance = Math.abs(targetLine - sectionTop);
+        if (distance < nearestDistance) {
+          nearestId = sectionId;
+          nearestDistance = distance;
+        }
+      });
+
+      if (!foundPastSection) {
+        const firstId = navItems[0]?.getAttribute("data-section") ?? "";
+        if (firstId && firstId !== currentActiveId) {
+          currentActiveId = firstId;
+          applyActiveState();
+        }
+        return;
+      }
+
+      if (nearestId && nearestId !== currentActiveId) {
+        currentActiveId = nearestId;
+        applyActiveState();
+      }
+    };
+
+    navItems.forEach((item) => {
+      const link = item.querySelector("a");
+      if (!link) return;
+
+      link.addEventListener("click", (event) => {
+        const sectionId = item.getAttribute("data-section");
+        if (!sectionId) return;
+        const sectionElement = document.getElementById(sectionId);
+        if (!sectionElement) return;
+
+        event.preventDefault();
+
+        currentActiveId = sectionId;
+        applyActiveState();
+
+        const targetY = sectionElement.offsetTop - headerOffset;
+        window.scrollTo({
+          top: Math.max(0, targetY),
+          behavior: "smooth",
+        });
+
+        history.replaceState(null, "", `#${sectionId}`);
+      });
+    });
+
+    window.addEventListener("scroll", updateActiveSectionByViewport, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateActiveSectionByViewport);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        updateActiveSectionByViewport();
+      },
+      {
+        rootMargin: "-20% 0px -65% 0px",
+        threshold: [0, 0.01, 0.05],
+      },
+    );
+
+    navItems.forEach((item) => {
+      const sectionId = item.getAttribute("data-section");
+      if (!sectionId) return;
+      const sectionElement = document.getElementById(sectionId);
+      if (!sectionElement) return;
+      observer.observe(sectionElement);
+    });
+
+    updateActiveSectionByViewport();
+  }
+</script>

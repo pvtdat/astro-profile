@@ -164,15 +164,55 @@ h3 {
   list-style: none;
 }
 
+.navigation__item {
+  position: relative;
+}
+
 .navigation__list a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding-bottom: 12px;
   color: var(--muted);
   font-size: 0.94rem;
   font-weight: 650;
   transition: color 160ms ease;
+  transition: .25s;
+  font-weight: 600;
+}
+
+.navigation__highlight {
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 80px;
+  height: 10px;
+  color: var(--primary);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px) scale(0.92);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.navigation__highlight svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.navigation__item.is-active a {
+  color: var(--text);
+}
+
+.navigation__item.is-active .navigation__highlight {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 .navigation__list a:hover {
-  color: var(--text);
+  color: var(--accent);
 }
 
 .hero {

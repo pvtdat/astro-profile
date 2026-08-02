@@ -25,7 +25,13 @@ export const skillGroups: SkillGroup[] = [
       "Material UI",
       "Ant Design",
     ],
-    coreSkills: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
+    coreSkills: [
+      "React",
+      "Next.js",
+      "TypeScript",
+      "JavaScript",
+      "Tailwind CSS",
+    ],
   },
   {
     title: "Backend",
@@ -47,7 +53,7 @@ export const skillGroups: SkillGroup[] = [
       "TensorFlow",
       "LabelImg",
     ],
-    coreSkills: ["Python", "YOLO11"],
+    coreSkills: ["Python", "YOLO11", "PySpark"],
   },
   {
     title: "Computer Vision",
