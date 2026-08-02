@@ -13,7 +13,7 @@ const canonicalURL = new URL(
   Astro.url.pathname,
   Astro.site ?? Astro.url.origin,
 );
-const faviconPath = `${import.meta.env.BASE_URL}favicon.svg`;
+const faviconPath = `${import.meta.env.BASE_URL}icons8-goat-outline-16.png`;
 ---
 
 <!doctype html>
@@ -34,7 +34,7 @@ const faviconPath = `${import.meta.env.BASE_URL}favicon.svg`;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700;800&family=Raleway:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <title>{title}</title>

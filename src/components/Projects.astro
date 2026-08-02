@@ -13,7 +13,10 @@ import { projects } from "../data/projects";
           <article class="card project-card">
             <div>
               <h3>{project.name}</h3>
-              <p>{project.description}</p>
+              <p class="timeline__company">{project.role}</p>
+              {project.description.map((line) => (
+                <p>{line}</p>
+              ))}
             </div>
 
             <ul class="tag-list" aria-label={`Công nghệ của ${project.name}`}>

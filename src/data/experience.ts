@@ -9,25 +9,17 @@ export interface ExperienceItem {
 export const experiences: ExperienceItem[] = [
   {
     company: "DXP Software",
-    role: "Software Developer",
-    period: "2024 – Hiện tại",
+    role: "Junior Software Engineer",
+    period: "Jun 2025 - Hiện tại",
     description:
-      "Phát triển và vận hành các ứng dụng web phục vụ hoạt động kinh doanh.",
+      "Phát triển và bảo trì các hệ thống Web, Backoffice và nền tảng quản trị phục vụ hoạt động doanh nghiệp.",
     achievements: [
-      "Xây dựng các module frontend và backend bằng TypeScript.",
-      "Tự động hóa quy trình kiểm thử và triển khai.",
-      "Cải thiện khả năng bảo trì thông qua kiến trúc component và module hóa.",
-    ],
-  },
-  {
-    company: "Freelance",
-    role: "Web Developer",
-    period: "2022 – 2024",
-    description:
-      "Thiết kế và triển khai website giới thiệu, landing page và hệ thống quản trị nội dung.",
-    achievements: [
-      "Phát triển website responsive cho thiết bị di động.",
-      "Tối ưu SEO kỹ thuật và tốc độ tải trang.",
+      "Thiết kế và phát triển các module Frontend/Backend bằng **TypeScript**.",
+      "Phát triển và tối ưu các module Backoffice phục vụ vận hành doanh nghiệp.",
+      "Thiết kế **RESTful API** và tích hợp **GraphQL** cho các hệ thống web.",
+      "Thực hiện kiểm thử hiệu năng với **K6** nhằm đánh giá khả năng chịu tải của hệ thống.",
+      "Phân tích dữ liệu bằng **PySpark** và xây dựng báo cáo trực quan.",
+      "Nghiên cứu và triển khai các mô hình **Object Detection** bằng **YOLO11** và **OpenCV** cho bài toán y tế.",
     ],
   },
 ];

@@ -31,6 +31,7 @@ export const skillGroups: SkillGroup[] = [
       "TypeScript",
       "JavaScript",
       "Tailwind CSS",
+      "React Hook Form",
     ],
   },
   {
@@ -76,6 +77,7 @@ export const skillGroups: SkillGroup[] = [
       "VS Code",
       "Postman",
       "Jira",
+      "Jenkins",
     ],
   },
   {
