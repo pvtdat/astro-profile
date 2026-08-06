@@ -5,6 +5,11 @@ import { profile } from "../data/profile";
 
 const base = import.meta.env.BASE_URL;
 const assetPath = (path: string) => `${base}${path}`;
+const currentYear = new Date().getFullYear();
+const latestIssuedYear = certificates.reduce((latest, certificate) => {
+  const issuedYear = Number.parseInt(certificate.issuedAt, 10);
+  return Number.isNaN(issuedYear) ? latest : Math.max(latest, issuedYear);
+}, 0) || currentYear;
 ---
 
 <BaseLayout
@@ -17,8 +22,11 @@ const assetPath = (path: string) => `${base}${path}`;
       aria-label="Điều hướng chứng chỉ"
     >
       <a class="logo" href={base} aria-label="Về trang chủ">{`<DP />`}</a>
-      <a class="certificate-navigation__back" href={base}>
-        <span aria-hidden="true">←</span> Về trang chủ
+      <a class="navigation__back" href={base}>
+        <span aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-to-line-icon lucide-arrow-left-to-line"><path d="M3 19V5"/><path d="m13 6-6 6 6 6"/><path d="M7 12h14"/></svg>  
+        </span>
+        <span>Về trang chủ</span>
       </a>
     </nav>
   </header>
@@ -31,6 +39,13 @@ const assetPath = (path: string) => `${base}${path}`;
         Những cột mốc ghi lại quá trình học hỏi, rèn luyện và phát triển chuyên
         môn của tôi.
       </p>
+      <div class="certificate-hero__latest">
+        <span style="color: var(--muted);">Mới nhất</span>
+        <span style="color: var(--primary);" class="font-inter">{latestIssuedYear}</span>
+        <span style="color: var(--primary);">
+          <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check-icon lucide-shield-check"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+      </div>
       <div class="certificate-hero__count">
         <strong>{String(certificates.length).padStart(2, "0")}</strong>
         <span>chứng chỉ<br />đã hoàn thành</span>
@@ -56,11 +71,11 @@ const assetPath = (path: string) => `${base}${path}`;
                 src={assetPath(certificate.image)}
                 alt={`Chứng chỉ ${certificate.title} cấp bởi ${certificate.issuer}`}
                 width="1200"
-                height="850"
+                height="300"
                 loading={index === 0 ? "eager" : "lazy"}
               />
               <span class="certificate-card__zoom" aria-hidden="true">
-                ↗
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
               </span>
             </button>
 
@@ -69,7 +84,7 @@ const assetPath = (path: string) => `${base}${path}`;
                 <span>{certificate.issuer}</span>
                 <span>{certificate.issuedAt}</span>
               </div>
-              <h2 style="line-height: 32px; min-height: 64px;">
+              <h2 style="line-height: 32px; min-height: 64px; letter-spacing: 0.02em;" class="font-playfair">
                 {certificate.title}
               </h2>
               <ul class="tag-list font-inter" aria-label="Kỹ năng">
@@ -98,18 +113,27 @@ const assetPath = (path: string) => `${base}${path}`;
     <div class="certificate-lightbox__bar">
       <p data-certificate-title></p>
       <button
+        class="certificate-lightbox__close"
         type="button"
         data-certificate-close
-        aria-label="Đóng ảnh chứng chỉ">×</button
+        aria-label="Đóng ảnh chứng chỉ">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button
       >
     </div>
     <img data-certificate-image src="" alt="" />
   </dialog>
 
-  <footer class="site-footer">
+  <footer class="site-footer font-manrope">
     <div class="container site-footer__content">
-      <p>© {new Date().getFullYear()} {profile.name}. All rights reserved.</p>
-      <a href="#certificate-top">Lên đầu trang ↑</a>
+      <p>
+        © {currentYear}
+        {profile.name}. All rights reserved.
+      </p>
+      <a href="#certificate-top" class="navigation__back">
+        <span>Lên đầu trang</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-up-dash-icon lucide-arrow-big-up-dash"><path d="M14 16a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h3.293a.707.707 0 0 0 .5-1.207l-6.939-6.939a1.207 1.207 0 0 0-1.708 0l-6.94 6.94a.707.707 0 0 0 .5 1.206H8a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1z"/><path d="M9 20h6"/></svg>
+      </a>
     </div>
   </footer>
 
