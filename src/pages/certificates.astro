@@ -1,0 +1,172 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { certificates } from "../data/certificates";
+import { profile } from "../data/profile";
+
+const base = import.meta.env.BASE_URL;
+const assetPath = (path: string) => `${base}${path}`;
+const currentYear = new Date().getFullYear();
+const latestIssuedYear = certificates.reduce((latest, certificate) => {
+  const issuedYear = Number.parseInt(certificate.issuedAt, 10);
+  return Number.isNaN(issuedYear) ? latest : Math.max(latest, issuedYear);
+}, 0) || currentYear;
+---
+
+<BaseLayout
+  title={`Certificates | ${profile.name}`}
+  description={`Các chứng chỉ và thành tựu chuyên môn của ${profile.name}.`}
+>
+  <header class="certificate-header">
+    <nav
+      class="container certificate-navigation"
+      aria-label="Điều hướng chứng chỉ"
+    >
+      <a class="logo" href={base} aria-label="Về trang chủ">{`<DP />`}</a>
+      <a class="navigation__back" href={base}>
+        <span aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-to-line-icon lucide-arrow-left-to-line"><path d="M3 19V5"/><path d="m13 6-6 6 6 6"/><path d="M7 12h14"/></svg>  
+        </span>
+        <span>Về trang chủ</span>
+      </a>
+    </nav>
+  </header>
+
+  <main id="certificate-top">
+    <section class="certificate-hero container">
+      <p class="eyebrow">Learning journey</p>
+      <h1>Certificates</h1>
+      <p>
+        Những cột mốc ghi lại quá trình học hỏi, rèn luyện và phát triển chuyên
+        môn của tôi.
+      </p>
+      <div class="certificate-hero__latest">
+        <span style="color: var(--muted);">Mới nhất</span>
+        <span style="color: var(--primary);" class="font-inter">{latestIssuedYear}</span>
+        <span style="color: var(--primary);">
+          <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check-icon lucide-shield-check"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+      </div>
+      <div class="certificate-hero__count">
+        <strong>{String(certificates.length).padStart(2, "0")}</strong>
+        <span>chứng chỉ<br />đã hoàn thành</span>
+      </div>
+    </section>
+
+    <section
+      class="certificate-gallery container"
+      aria-label="Danh sách chứng chỉ"
+    >
+      {
+        certificates.map((certificate, index) => (
+          <article class="certificate-card">
+            <button
+              class="certificate-card__preview"
+              type="button"
+              data-certificate-open
+              data-image={assetPath(certificate.image)}
+              data-title={certificate.title}
+              aria-label={`Xem ảnh lớn: ${certificate.title}`}
+            >
+              <img
+                src={assetPath(certificate.image)}
+                alt={`Chứng chỉ ${certificate.title} cấp bởi ${certificate.issuer}`}
+                width="1200"
+                height="300"
+                loading={index === 0 ? "eager" : "lazy"}
+              />
+              <span class="certificate-card__zoom" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+              </span>
+            </button>
+
+            <div class="certificate-card__body">
+              <div class="certificate-card__meta font-manrope">
+                <span>{certificate.issuer}</span>
+                <span>{certificate.issuedAt}</span>
+              </div>
+              <h2 style="line-height: 32px; min-height: 64px; letter-spacing: 0.02em;" class="font-playfair">
+                {certificate.title}
+              </h2>
+              <ul class="tag-list font-inter" aria-label="Kỹ năng">
+                {certificate.skills.map((skill) => (
+                  <li>{skill}</li>
+                ))}
+              </ul>
+              {certificate.credentialUrl && (
+                <a
+                  class="certificate-card__credential"
+                  href={certificate.credentialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Xem credential <span aria-hidden="true">↗</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </section>
+  </main>
+
+  <dialog class="certificate-lightbox" data-certificate-dialog>
+    <div class="certificate-lightbox__bar">
+      <p data-certificate-title></p>
+      <button
+        class="certificate-lightbox__close"
+        type="button"
+        data-certificate-close
+        aria-label="Đóng ảnh chứng chỉ">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button
+      >
+    </div>
+    <img data-certificate-image src="" alt="" />
+  </dialog>
+
+  <footer class="site-footer font-manrope">
+    <div class="container site-footer__content">
+      <p>
+        © {currentYear}
+        {profile.name}. All rights reserved.
+      </p>
+      <a href="#certificate-top" class="navigation__back">
+        <span>Lên đầu trang</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-up-dash-icon lucide-arrow-big-up-dash"><path d="M14 16a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h3.293a.707.707 0 0 0 .5-1.207l-6.939-6.939a1.207 1.207 0 0 0-1.708 0l-6.94 6.94a.707.707 0 0 0 .5 1.206H8a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1z"/><path d="M9 20h6"/></svg>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    const dialog = document.querySelector<HTMLDialogElement>(
+      "[data-certificate-dialog]",
+    );
+    const dialogImage = dialog?.querySelector<HTMLImageElement>(
+      "[data-certificate-image]",
+    );
+    const dialogTitle = dialog?.querySelector<HTMLElement>(
+      "[data-certificate-title]",
+    );
+    const closeButton = dialog?.querySelector<HTMLButtonElement>(
+      "[data-certificate-close]",
+    );
+
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-certificate-open]")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!dialog || !dialogImage || !dialogTitle) return;
+          const title = button.dataset.title ?? "Certificate";
+          dialogImage.src = button.dataset.image ?? "";
+          dialogImage.alt = title;
+          dialogTitle.textContent = title;
+          dialog.showModal();
+        });
+      });
+
+    closeButton?.addEventListener("click", () => dialog?.close());
+    dialog?.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  </script>
+</BaseLayout>
