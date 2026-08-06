@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Mở địa chỉ được Astro hiển thị, mặc định thường là
+Mở địa chỉ được Astro hiển thị, mặc định thường là:
 
 ```text
 http://localhost:4321
