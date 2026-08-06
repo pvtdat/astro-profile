@@ -1,0 +1,148 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { certificates } from "../data/certificates";
+import { profile } from "../data/profile";
+
+const base = import.meta.env.BASE_URL;
+const assetPath = (path: string) => `${base}${path}`;
+---
+
+<BaseLayout
+  title={`Certificates | ${profile.name}`}
+  description={`Các chứng chỉ và thành tựu chuyên môn của ${profile.name}.`}
+>
+  <header class="certificate-header">
+    <nav
+      class="container certificate-navigation"
+      aria-label="Điều hướng chứng chỉ"
+    >
+      <a class="logo" href={base} aria-label="Về trang chủ">{`<DP />`}</a>
+      <a class="certificate-navigation__back" href={base}>
+        <span aria-hidden="true">←</span> Về trang chủ
+      </a>
+    </nav>
+  </header>
+
+  <main id="certificate-top">
+    <section class="certificate-hero container">
+      <p class="eyebrow">Learning journey</p>
+      <h1>Certificates</h1>
+      <p>
+        Những cột mốc ghi lại quá trình học hỏi, rèn luyện và phát triển chuyên
+        môn của tôi.
+      </p>
+      <div class="certificate-hero__count">
+        <strong>{String(certificates.length).padStart(2, "0")}</strong>
+        <span>chứng chỉ<br />đã hoàn thành</span>
+      </div>
+    </section>
+
+    <section
+      class="certificate-gallery container"
+      aria-label="Danh sách chứng chỉ"
+    >
+      {
+        certificates.map((certificate, index) => (
+          <article class="certificate-card">
+            <button
+              class="certificate-card__preview"
+              type="button"
+              data-certificate-open
+              data-image={assetPath(certificate.image)}
+              data-title={certificate.title}
+              aria-label={`Xem ảnh lớn: ${certificate.title}`}
+            >
+              <img
+                src={assetPath(certificate.image)}
+                alt={`Chứng chỉ ${certificate.title} cấp bởi ${certificate.issuer}`}
+                width="1200"
+                height="850"
+                loading={index === 0 ? "eager" : "lazy"}
+              />
+              <span class="certificate-card__zoom" aria-hidden="true">
+                ↗
+              </span>
+            </button>
+
+            <div class="certificate-card__body">
+              <div class="certificate-card__meta font-manrope">
+                <span>{certificate.issuer}</span>
+                <span>{certificate.issuedAt}</span>
+              </div>
+              <h2 style="line-height: 32px; min-height: 64px;">
+                {certificate.title}
+              </h2>
+              <ul class="tag-list font-inter" aria-label="Kỹ năng">
+                {certificate.skills.map((skill) => (
+                  <li>{skill}</li>
+                ))}
+              </ul>
+              {certificate.credentialUrl && (
+                <a
+                  class="certificate-card__credential"
+                  href={certificate.credentialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Xem credential <span aria-hidden="true">↗</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </section>
+  </main>
+
+  <dialog class="certificate-lightbox" data-certificate-dialog>
+    <div class="certificate-lightbox__bar">
+      <p data-certificate-title></p>
+      <button
+        type="button"
+        data-certificate-close
+        aria-label="Đóng ảnh chứng chỉ">×</button
+      >
+    </div>
+    <img data-certificate-image src="" alt="" />
+  </dialog>
+
+  <footer class="site-footer">
+    <div class="container site-footer__content">
+      <p>© {new Date().getFullYear()} {profile.name}. All rights reserved.</p>
+      <a href="#certificate-top">Lên đầu trang ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    const dialog = document.querySelector<HTMLDialogElement>(
+      "[data-certificate-dialog]",
+    );
+    const dialogImage = dialog?.querySelector<HTMLImageElement>(
+      "[data-certificate-image]",
+    );
+    const dialogTitle = dialog?.querySelector<HTMLElement>(
+      "[data-certificate-title]",
+    );
+    const closeButton = dialog?.querySelector<HTMLButtonElement>(
+      "[data-certificate-close]",
+    );
+
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-certificate-open]")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!dialog || !dialogImage || !dialogTitle) return;
+          const title = button.dataset.title ?? "Certificate";
+          dialogImage.src = button.dataset.image ?? "";
+          dialogImage.alt = title;
+          dialogTitle.textContent = title;
+          dialog.showModal();
+        });
+      });
+
+    closeButton?.addEventListener("click", () => dialog?.close());
+    dialog?.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  </script>
+</BaseLayout>

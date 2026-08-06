@@ -4,6 +4,7 @@ import { profile } from "../data/profile";
 const base = import.meta.env.BASE_URL;
 const avatarPath = `${base}${profile.avatar}`;
 const cvPath = profile.cvPath ? `${base}${profile.cvPath}` : undefined;
+const certificatesPath = `${base}certificates/`;
 ---
 
 <section id="home" class="hero container section">
@@ -28,6 +29,7 @@ const cvPath = profile.cvPath ? `${base}${profile.cvPath}` : undefined;
           </a>
         )
       }
+      <a class="button button--secondary" href={certificatesPath}> Cert </a>
     </div>
   </div>
 
