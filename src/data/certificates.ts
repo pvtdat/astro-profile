@@ -5,6 +5,7 @@ export interface Certificate {
   image: string;
   credentialUrl?: string;
   skills: string[];
+  summary?: string;
 }
 
 // Thay nội dung và ảnh mẫu bên dưới bằng chứng chỉ thật của bạn.
@@ -21,6 +22,14 @@ export const certificates: Certificate[] = [
     issuer: "Codeacademy",
     issuedAt: "2026",
     image: "certificates/regression.png",
-    skills: ["Linear Regression", "Multiple Linear Regression"],
+    summary:
+      "Hoàn thành khóa học nhập môn Machine Learning với trọng tâm là Linear Regression và Multiple Linear Regression. Thực hành xây dựng mô hình, dự đoán giá trị từ dữ liệu và đánh giá độ chính xác của mô hình.",
+    skills: [
+      "Machine Learning",
+      "Linear Regression",
+      "Multiple Linear Regression",
+      "Regression",
+      "Model Evaluation",
+    ],
   },
 ];
