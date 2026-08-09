@@ -6,8 +6,13 @@ import { profile } from "../data/profile";
 const base = import.meta.env.BASE_URL;
 const assetPath = (path: string) => `${base}${path}`;
 const currentYear = new Date().getFullYear();
-const profileVisitPath = base;
-const certificateVisitPath = `${base}certificates/`;
+const counterBasePath = base.endsWith("/") ? base : `${base}/`;
+const profileVisitPath = counterBasePath;
+const certificateVisitPath = `${counterBasePath}certificates/`;
+
+console.log("profileVisitPath data:", profileVisitPath);
+console.log("certificateVisitPath data:", certificateVisitPath);
+
 
 const sortedCertificates = [...certificates].sort((a, b) => {
   const yearA = Number.parseInt(a.issuedAt, 10) || 0;
