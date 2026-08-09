@@ -967,7 +967,8 @@ ul {
   box-shadow: var(--shadow-soft);
 }
 
-.certificate-live-stat span {
+.certificate-live-stat__label,
+.certificate-live-stat__source {
   color: var(--muted);
   font-size: 0.8rem;
   font-weight: 800;
@@ -975,11 +976,18 @@ ul {
   text-transform: uppercase;
 }
 
-.certificate-live-stat > div {
+.certificate-live-stat__value {
   color: var(--text);
   font-family: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
   font-size: 2.1rem;
+  font-weight: 700;
   line-height: 1;
+}
+
+.certificate-live-stat__source {
+  color: var(--primary);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
 }
 
 .certificate-metric {
