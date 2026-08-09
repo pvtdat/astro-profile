@@ -10,10 +10,6 @@ const counterBasePath = base.endsWith("/") ? base : `${base}/`;
 const profileVisitPath = counterBasePath;
 const certificateVisitPath = `${counterBasePath}certificates/`;
 
-console.log("profileVisitPath data:", profileVisitPath);
-console.log("certificateVisitPath data:", certificateVisitPath);
-
-
 const sortedCertificates = [...certificates].sort((a, b) => {
   const yearA = Number.parseInt(a.issuedAt, 10) || 0;
   const yearB = Number.parseInt(b.issuedAt, 10) || 0;
@@ -96,13 +92,11 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
             <span class="certificate-live-stat__label">Certificates visits</span>
             <strong class="certificate-live-stat__value" data-stat-value="certificates">N/A</strong>
             <span class="certificate-live-stat__source">GoatCounter</span>
-            <span data-goatcounter-probe="certificates" hidden></span>
           </div>
           <div class="certificate-live-stat">
             <span class="certificate-live-stat__label">Profile visits</span>
             <strong class="certificate-live-stat__value" data-stat-value="profile">N/A</strong>
             <span class="certificate-live-stat__source">GoatCounter</span>
-            <span data-goatcounter-probe="profile" hidden></span>
           </div>
         </div>
       </div>
@@ -337,18 +331,7 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
     const certificatesPath = statsRoot?.dataset.certificatesPath;
     const profilePath = statsRoot?.dataset.profilePath;
 
-    const statsTargets = [
-      {
-        path: certificatesPath,
-        probeSelector: '[data-goatcounter-probe="certificates"]',
-        valueSelector: '[data-stat-value="certificates"]',
-      },
-      {
-        path: profilePath,
-        probeSelector: '[data-goatcounter-probe="profile"]',
-        valueSelector: '[data-stat-value="profile"]',
-      },
-    ];
+    const GOATCOUNTER_URL = "https://datpham.goatcounter.com";
 
     const setStatValue = (selector: string, value: string) => {
       const valueElement = document.querySelector<HTMLElement>(selector);
@@ -356,51 +339,44 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
       valueElement.textContent = value.trim() || "N/A";
     };
 
-    const bindCounterProbe = (probeSelector: string, valueSelector: string) => {
-      const probe = document.querySelector<HTMLElement>(probeSelector);
-      if (!probe) return;
+    const getGoatCounterCount = async (path: string) => {
+      const encodedPath = encodeURIComponent(path);
+      const response = await fetch(`${GOATCOUNTER_URL}/counter/${encodedPath}.json`);
 
-      const syncValue = () => {
-        const value = probe.textContent?.replace(/\s+/g, " ").trim() ?? "";
-        setStatValue(valueSelector, value || "N/A");
-      };
+      if (!response.ok) {
+        throw new Error(`GoatCounter HTTP ${response.status}`);
+      }
 
-      const observer = new MutationObserver(syncValue);
-      observer.observe(probe, {
-        childList: true,
-        characterData: true,
-        subtree: true,
-      });
-
-      window.setTimeout(() => {
-        syncValue();
-        observer.disconnect();
-      }, 4500);
+      const data: { count: string } = await response.json();
+      return Number(data.count);
     };
 
-    const waitForGoatCounter = window.setInterval(() => {
-      if (!window.goatcounter?.visit_count) return;
+    const loadVisitCount = async (
+      path: string | undefined,
+      valueSelector: string,
+    ) => {
+      if (!path) {
+        setStatValue(valueSelector, "N/A");
+        return;
+      }
 
-      window.clearInterval(waitForGoatCounter);
-
-      statsTargets.forEach(({ path, probeSelector, valueSelector }) => {
-        if (!path || !document.querySelector(probeSelector)) {
+      try {
+        const count = await getGoatCounterCount(path);
+        console.log(`Visit count for ${path}: ${count}`);
+        if (Number.isFinite(count)) {
+          setStatValue(valueSelector, count.toLocaleString("en-US"));
+        } else {
           setStatValue(valueSelector, "N/A");
-          return;
         }
+      } catch (error) {
+        console.error("Failed to load GoatCounter:", error);
+        setStatValue(valueSelector, "N/A");
+      }
+    };
 
-        bindCounterProbe(probeSelector, valueSelector);
-
-        window.goatcounter?.visit_count?.({
-          append: probeSelector,
-          path,
-          type: "html",
-        });
-      });
-    }, 100);
-
-    window.setTimeout(() => {
-      window.clearInterval(waitForGoatCounter);
-    }, 4500);
+    void Promise.all([
+      loadVisitCount(certificatesPath, '[data-stat-value="certificates"]'),
+      loadVisitCount(profilePath, '[data-stat-value="profile"]'),
+    ]);
   </script>
 </BaseLayout>
