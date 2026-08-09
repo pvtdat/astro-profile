@@ -975,7 +975,7 @@ ul {
   text-transform: uppercase;
 }
 
-.certificate-live-stat strong {
+.certificate-live-stat > div {
   color: var(--text);
   font-family: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
   font-size: 2.1rem;
