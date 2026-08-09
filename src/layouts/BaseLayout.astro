@@ -14,6 +14,9 @@ const canonicalURL = new URL(
   Astro.site ?? Astro.url.origin,
 );
 const faviconPath = `${import.meta.env.BASE_URL}icons8-goat-outline-16.png`;
+const goatcounterEndpoint =
+  import.meta.env.PUBLIC_GOATCOUNTER_ENDPOINT ??
+  "https://datpham.goatcounter.com/count";
 ---
 
 <!doctype html>
@@ -43,5 +46,11 @@ const faviconPath = `${import.meta.env.BASE_URL}icons8-goat-outline-16.png`;
 
   <body>
     <slot />
+
+    <script
+      data-goatcounter={goatcounterEndpoint}
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
   </body>
 </html>

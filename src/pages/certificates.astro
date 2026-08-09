@@ -6,6 +6,9 @@ import { profile } from "../data/profile";
 const base = import.meta.env.BASE_URL;
 const assetPath = (path: string) => `${base}${path}`;
 const currentYear = new Date().getFullYear();
+const goatcounterEndpoint =
+  import.meta.env.PUBLIC_GOATCOUNTER_ENDPOINT ??
+  "https://datpham.goatcounter.com/count";
 
 const sortedCertificates = [...certificates].sort((a, b) => {
   const yearA = Number.parseInt(a.issuedAt, 10) || 0;
@@ -79,6 +82,20 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
             <dd>Đơn vị cấp chứng chỉ</dd>
           </div>
         </dl>
+        <div
+          class="certificate-live-stats"
+          data-goatcounter-stats
+          data-goatcounter-endpoint={goatcounterEndpoint}
+        >
+          <div class="certificate-live-stat">
+            <span>Unique visitors</span>
+            <strong data-goatcounter-unique>--</strong>
+          </div>
+          <div class="certificate-live-stat">
+            <span>Total views</span>
+            <strong data-goatcounter-views>--</strong>
+          </div>
+        </div>
       </div>
 
       {featuredCertificate && (
@@ -305,5 +322,56 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
     dialog?.addEventListener("click", (event) => {
       if (event.target === dialog) dialog.close();
     });
+
+    const statsRoot = document.querySelector<HTMLElement>(
+      "[data-goatcounter-stats]",
+    );
+    const goatcounterEndpoint = statsRoot?.dataset.goatcounterEndpoint;
+
+    if (statsRoot && goatcounterEndpoint) {
+      const uniqueEl = statsRoot.querySelector<HTMLElement>(
+        "[data-goatcounter-unique]",
+      );
+      const viewsEl = statsRoot.querySelector<HTMLElement>(
+        "[data-goatcounter-views]",
+      );
+
+      const resolvePath = () => {
+        const goatcounter = (window as any).goatcounter as
+          | {
+              get_data?: () => { p?: string };
+            }
+          | undefined;
+
+        return goatcounter?.get_data?.().p ?? window.location.pathname;
+      };
+
+      const loadCounter = async (path: string) => {
+        const response = await fetch(
+          `${goatcounterEndpoint}/counter/${encodeURIComponent(path)}.json`,
+        );
+
+        console.log("Fetching GoatCounter data for", path, response);
+
+        if (!response.ok) {
+          throw new Error(`Failed to load GoatCounter data for ${path}`);
+        }
+
+        return response.json() as Promise<{ count: string }>;
+      };
+
+      Promise.all([
+        loadCounter("TOTAL"),
+        loadCounter(resolvePath()),
+      ])
+        .then(([total, currentPage]) => {
+          if (uniqueEl) uniqueEl.textContent = total.count;
+          if (viewsEl) viewsEl.textContent = currentPage.count;
+        })
+        .catch(() => {
+          if (uniqueEl) uniqueEl.textContent = "N/A";
+          if (viewsEl) viewsEl.textContent = "N/A";
+        });
+    }
   </script>
 </BaseLayout>
