@@ -13,6 +13,139 @@ const normalizePath = (pathname: string) => {
 const counterBasePath = base.endsWith("/") ? base : `${base}/`;
 const profileVisitPath = normalizePath(counterBasePath);
 const certificateVisitPath = normalizePath(`${counterBasePath}certificates/`);
+const defaultGoatcounterProfilePath =
+  profileVisitPath === "/" ? "/astro-profile" : profileVisitPath;
+const goatcounterProfilePath = normalizePath(
+  import.meta.env.GOATCOUNTER_PROFILE_PATH ?? defaultGoatcounterProfilePath,
+);
+const goatcounterCertificatePath = normalizePath(
+  import.meta.env.GOATCOUNTER_CERTIFICATES_PATH ?? `${goatcounterProfilePath}/certificates`,
+);
+const goatcounterBaseUrl =
+  import.meta.env.PUBLIC_GOATCOUNTER_URL ?? "https://datpham.goatcounter.com";
+const goatcounterApiToken = import.meta.env.GOATCOUNTER_API_TOKEN;
+const goatcounterApiStart =
+  import.meta.env.GOATCOUNTER_API_START ?? "2026-01-01T00:00:00Z";
+
+const visitCountByPath = new Map<string, number>();
+
+const extractPath = (entry: Record<string, unknown>) => {
+  const rawPath = entry.path ?? entry.event;
+  return typeof rawPath === "string" ? normalizePath(rawPath) : undefined;
+};
+
+const extractCount = (entry: Record<string, unknown>) => {
+  const rawCount = entry.count ?? entry.hits ?? entry.total;
+  const parsed =
+    typeof rawCount === "number"
+      ? rawCount
+      : Number.parseInt(String(rawCount ?? ""), 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+if (goatcounterApiToken) {
+  try {
+    const requestHeaders = {
+      Authorization: `Bearer ${goatcounterApiToken}`,
+    };
+
+    const parseRows = (payload: {
+      hits?: Array<Record<string, unknown>>;
+      stats?: Array<Record<string, unknown>>;
+    }) => {
+      return payload.hits ?? payload.stats ?? [];
+    };
+
+    const mergeRows = (rows: Array<Record<string, unknown>>) => {
+      for (const row of rows) {
+        const path = extractPath(row);
+        const count = extractCount(row);
+        if (!path || count === undefined) continue;
+        visitCountByPath.set(path, count);
+      }
+    };
+
+    const fetchRows = async (paths: string[], limit: number) => {
+      const params = new URLSearchParams();
+      params.set("start", goatcounterApiStart);
+      params.set("path_by_name", "true");
+      params.set("limit", String(limit));
+      for (const path of paths) {
+        params.append("include_paths", path);
+      }
+
+      const response = await fetch(
+        `${goatcounterBaseUrl}/api/v0/stats/hits?${params.toString()}`,
+        { headers: requestHeaders },
+      );
+
+      if (!response.ok) {
+        throw new Error(`GoatCounter API HTTP ${response.status}`);
+      }
+
+      const payload = (await response.json()) as {
+        hits?: Array<Record<string, unknown>>;
+        stats?: Array<Record<string, unknown>>;
+      };
+
+      if (import.meta.env.DEV) {
+        console.debug("[GoatCounter API] Raw response:", {
+          paths,
+          payload,
+        });
+      }
+
+      return parseRows(payload);
+    };
+
+    mergeRows(await fetchRows([goatcounterProfilePath, goatcounterCertificatePath], 100));
+
+    if (!visitCountByPath.has(goatcounterCertificatePath)) {
+      mergeRows(await fetchRows([goatcounterCertificatePath], 10));
+    }
+
+    if (!visitCountByPath.has(goatcounterProfilePath)) {
+      mergeRows(await fetchRows([goatcounterProfilePath], 10));
+    }
+
+    if (import.meta.env.DEV) {
+      console.debug("[GoatCounter API] Path counts:", {
+        [goatcounterProfilePath]: visitCountByPath.get(goatcounterProfilePath) ?? null,
+        [goatcounterCertificatePath]: visitCountByPath.get(goatcounterCertificatePath) ?? null,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to load GoatCounter API stats:", error);
+  }
+} else {
+  console.warn(
+    "GOATCOUNTER_API_TOKEN is not set. Visit counters will display N/A.",
+  );
+}
+
+const formatVisitCount = (value: number | undefined) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "N/A";
+  return value.toLocaleString("en-US");
+};
+const profileVisitCountLabel = formatVisitCount(
+  visitCountByPath.get(goatcounterProfilePath),
+);
+const certificateVisitCountLabel = formatVisitCount(
+  visitCountByPath.get(goatcounterCertificatePath),
+);
+const goatcounterDebugPayload = {
+  mode: goatcounterApiToken ? "api" : "no-token",
+  start: goatcounterApiStart,
+  pageProfilePath: profileVisitPath,
+  pageCertificatePath: certificateVisitPath,
+  queryProfilePath: goatcounterProfilePath,
+  queryCertificatePath: goatcounterCertificatePath,
+  profileCount: visitCountByPath.get(goatcounterProfilePath) ?? null,
+  certificateCount: visitCountByPath.get(goatcounterCertificatePath) ?? null,
+};
+const goatcounterDebugDataAttr = import.meta.env.DEV
+  ? JSON.stringify(goatcounterDebugPayload)
+  : undefined;
 
 const sortedCertificates = [...certificates].sort((a, b) => {
   const yearA = Number.parseInt(a.issuedAt, 10) || 0;
@@ -91,15 +224,16 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
           data-certificate-stats
           data-certificates-path={certificateVisitPath}
           data-profile-path={profileVisitPath}
+          data-goatcounter-debug={goatcounterDebugDataAttr}
         >
           <div class="certificate-live-stat">
             <span class="certificate-live-stat__label">Certificates visits</span>
-            <strong class="certificate-live-stat__value" data-stat-value="certificates">N/A</strong>
+            <strong class="certificate-live-stat__value" data-stat-value="certificates">{certificateVisitCountLabel}</strong>
             <span class="certificate-live-stat__source">GoatCounter</span>
           </div>
           <div class="certificate-live-stat">
             <span class="certificate-live-stat__label">Profile visits</span>
-            <strong class="certificate-live-stat__value" data-stat-value="profile">N/A</strong>
+            <strong class="certificate-live-stat__value" data-stat-value="profile">{profileVisitCountLabel}</strong>
             <span class="certificate-live-stat__source">GoatCounter</span>
           </div>
         </div>
@@ -332,74 +466,16 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
     const statsRoot = document.querySelector<HTMLElement>(
       "[data-certificate-stats]",
     );
-    const certificatesPath = statsRoot?.dataset.certificatesPath;
-    const profilePath = statsRoot?.dataset.profilePath;
+    const debugRaw = statsRoot?.dataset.goatcounterDebug;
 
-    const GOATCOUNTER_URL =
-      import.meta.env.PUBLIC_GOATCOUNTER_URL ?? "https://datpham.goatcounter.com";
-
-    const normalizePath = (pathname: string) => {
-      if (!pathname || pathname === "/") return "/";
-      return pathname.replace(/\/+$/, "");
-    };
-
-    const setStatValue = (selector: string, value: string) => {
-      const valueElement = document.querySelector<HTMLElement>(selector);
-      if (!valueElement) return;
-      valueElement.textContent = value.trim() || "N/A";
-    };
-
-    const getGoatCounterCount = async (path: string) => {
-      const normalizedPath = normalizePath(path);
-      const encodedPath = encodeURIComponent(normalizedPath);
-      const counterUrl = `${GOATCOUNTER_URL}/counter/${encodedPath}.json`;
-      const response = await fetch(counterUrl);
-
-      if (!response.ok) {
-        throw new Error(`GoatCounter HTTP ${response.status}`);
-      }
-
-      const data: { count: string } = await response.json();
-      if (import.meta.env.DEV) {
-        console.debug("[GoatCounter]", {
-          pathname: window.location.pathname,
-          normalizedPath,
-          counterUrl,
-          response: data,
-        });
-      }
-
-      return Number(data.count);
-    };
-
-    const loadVisitCount = async (
-      path: string | undefined,
-      valueSelector: string,
-    ) => {
-      if (!path) {
-        setStatValue(valueSelector, "N/A");
-        return;
-      }
-
-      const normalizedPath = normalizePath(path);
-
+    if (import.meta.env.DEV && debugRaw) {
       try {
-        const count = await getGoatCounterCount(normalizedPath);
-        console.log(`Visit count for ${normalizedPath}: ${count}`);
-        if (Number.isFinite(count)) {
-          setStatValue(valueSelector, count.toLocaleString("en-US"));
-        } else {
-          setStatValue(valueSelector, "N/A");
-        }
+        const debugData = JSON.parse(debugRaw);
+        console.debug("[GoatCounter Web Debug]", debugData);
       } catch (error) {
-        console.error("Failed to load GoatCounter:", error);
-        setStatValue(valueSelector, "N/A");
+        console.debug("[GoatCounter Web Debug] Failed to parse debug payload", error);
       }
-    };
+    }
 
-    void Promise.all([
-      loadVisitCount(certificatesPath, '[data-stat-value="certificates"]'),
-      loadVisitCount(profilePath, '[data-stat-value="profile"]'),
-    ]);
   </script>
 </BaseLayout>
