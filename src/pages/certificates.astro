@@ -187,7 +187,7 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
               />
               <span class="certificate-card__zoom" aria-hidden="true">
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns="https://www.w3.org/2000/svg"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -250,7 +250,7 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
         aria-label="Đóng ảnh chứng chỉ"
       >
         <svg
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           width="24"
           height="24"
           viewBox="0 0 24 24"
@@ -275,7 +275,7 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
       <a href="#certificate-top" class="navigation__back">
         <span>Lên đầu trang</span>
         <svg
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           width="24"
           height="24"
           viewBox="0 0 24 24"
@@ -331,7 +331,8 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
     const certificatesPath = statsRoot?.dataset.certificatesPath;
     const profilePath = statsRoot?.dataset.profilePath;
 
-    const GOATCOUNTER_URL = import.meta.env.PUBLIC_GOATCOUNTER_URL;
+    const GOATCOUNTER_URL =
+      import.meta.env.PUBLIC_GOATCOUNTER_URL ?? "https://datpham.goatcounter.com";
 
     const setStatValue = (selector: string, value: string) => {
       const valueElement = document.querySelector<HTMLElement>(selector);
