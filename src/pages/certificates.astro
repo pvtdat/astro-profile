@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { certificates } from "../data/certificates";
 import { profile } from "../data/profile";
+import { getSecret } from "astro:env/server";
 
 const base = import.meta.env.BASE_URL;
 const assetPath = (path: string) => `${base}${path}`;
@@ -23,7 +24,8 @@ const goatcounterCertificatePath = normalizePath(
 );
 const goatcounterBaseUrl =
   import.meta.env.PUBLIC_GOATCOUNTER_URL ?? "https://datpham.goatcounter.com";
-const goatcounterApiToken = import.meta.env.GOATCOUNTER_API_TOKEN;
+const token = getSecret("GOATCOUNTER_API_TOKEN");
+const goatcounterApiToken = import.meta.env.GOATCOUNTER_API_TOKEN ?? token;
 const goatcounterApiStart =
   import.meta.env.GOATCOUNTER_API_START ?? "2026-01-01T00:00:00Z";
 

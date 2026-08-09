@@ -31,6 +31,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # QUAN TRỌNG nếu secret/vars nằm trong Environment github-pages
+    environment:
+      name: github-pages
+      deployment: false
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -43,6 +48,25 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # Debug nhưng KHÔNG in token ra log
+      - name: Check GoatCounter environment
+        env:
+          GOATCOUNTER_API_TOKEN: ${{ secrets.GOATCOUNTER_API_TOKEN }}
+          GOATCOUNTER_API_START: ${{ vars.GOATCOUNTER_API_START }}
+        run: |
+          if [ -z "$GOATCOUNTER_API_TOKEN" ]; then
+            echo "::error::GOATCOUNTER_API_TOKEN is missing"
+            exit 1
+          fi
+
+          if [ -z "$GOATCOUNTER_API_START" ]; then
+            echo "::error::GOATCOUNTER_API_START is missing"
+            exit 1
+          fi
+
+          echo "GOATCOUNTER_API_TOKEN is configured"
+          echo "GOATCOUNTER_API_START=$GOATCOUNTER_API_START"
 
       - name: Build Astro
         run: npm run build
