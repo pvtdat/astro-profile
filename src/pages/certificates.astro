@@ -6,9 +6,13 @@ import { profile } from "../data/profile";
 const base = import.meta.env.BASE_URL;
 const assetPath = (path: string) => `${base}${path}`;
 const currentYear = new Date().getFullYear();
+const normalizePath = (pathname: string) => {
+  if (!pathname || pathname === "/") return "/";
+  return pathname.replace(/\/+$/, "");
+};
 const counterBasePath = base.endsWith("/") ? base : `${base}/`;
-const profileVisitPath = counterBasePath;
-const certificateVisitPath = `${counterBasePath}certificates/`;
+const profileVisitPath = normalizePath(counterBasePath);
+const certificateVisitPath = normalizePath(`${counterBasePath}certificates/`);
 
 const sortedCertificates = [...certificates].sort((a, b) => {
   const yearA = Number.parseInt(a.issuedAt, 10) || 0;
@@ -334,6 +338,11 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
     const GOATCOUNTER_URL =
       import.meta.env.PUBLIC_GOATCOUNTER_URL ?? "https://datpham.goatcounter.com";
 
+    const normalizePath = (pathname: string) => {
+      if (!pathname || pathname === "/") return "/";
+      return pathname.replace(/\/+$/, "");
+    };
+
     const setStatValue = (selector: string, value: string) => {
       const valueElement = document.querySelector<HTMLElement>(selector);
       if (!valueElement) return;
@@ -341,14 +350,25 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
     };
 
     const getGoatCounterCount = async (path: string) => {
-      const encodedPath = encodeURIComponent(path);
-      const response = await fetch(`${GOATCOUNTER_URL}/counter/${encodedPath}.json`);
+      const normalizedPath = normalizePath(path);
+      const encodedPath = encodeURIComponent(normalizedPath);
+      const counterUrl = `${GOATCOUNTER_URL}/counter/${encodedPath}.json`;
+      const response = await fetch(counterUrl);
 
       if (!response.ok) {
         throw new Error(`GoatCounter HTTP ${response.status}`);
       }
 
       const data: { count: string } = await response.json();
+      if (import.meta.env.DEV) {
+        console.debug("[GoatCounter]", {
+          pathname: window.location.pathname,
+          normalizedPath,
+          counterUrl,
+          response: data,
+        });
+      }
+
       return Number(data.count);
     };
 
@@ -361,9 +381,11 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
         return;
       }
 
+      const normalizedPath = normalizePath(path);
+
       try {
-        const count = await getGoatCounterCount(path);
-        console.log(`Visit count for ${path}: ${count}`);
+        const count = await getGoatCounterCount(normalizedPath);
+        console.log(`Visit count for ${normalizedPath}: ${count}`);
         if (Number.isFinite(count)) {
           setStatValue(valueSelector, count.toLocaleString("en-US"));
         } else {
