@@ -15,8 +15,7 @@ const canonicalURL = new URL(
 );
 const faviconPath = `${import.meta.env.BASE_URL}icons8-goat-outline-16.png`;
 const goatcounterEndpoint =
-  import.meta.env.PUBLIC_GOATCOUNTER_ENDPOINT ??
-  "https://datpham.goatcounter.com/count";
+  import.meta.env.PUBLIC_GOATCOUNTER_ENDPOINT;
 ---
 
 <!doctype html>
@@ -50,7 +49,7 @@ const goatcounterEndpoint =
     <script
       data-goatcounter={goatcounterEndpoint}
       async
-      src="//gc.zgo.at/count.js"
+      src="https://gc.zgo.at/count.js"
     ></script>
   </body>
 </html>

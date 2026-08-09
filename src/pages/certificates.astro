@@ -331,7 +331,7 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
     const certificatesPath = statsRoot?.dataset.certificatesPath;
     const profilePath = statsRoot?.dataset.profilePath;
 
-    const GOATCOUNTER_URL = "https://datpham.goatcounter.com";
+    const GOATCOUNTER_URL = import.meta.env.PUBLIC_GOATCOUNTER_URL;
 
     const setStatValue = (selector: string, value: string) => {
       const valueElement = document.querySelector<HTMLElement>(selector);
