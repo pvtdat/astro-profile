@@ -4,14 +4,29 @@ import { profile } from "../data/profile";
 const base = import.meta.env.BASE_URL;
 const avatarPath = `${base}${profile.avatar}`;
 const cvPath = profile.cvPath ? `${base}${profile.cvPath}` : undefined;
-const certificatesPath = `${base}certificates/`;
+
+const heroHighlights = [
+  "Web product systems",
+  "Backoffice workflows",
+  "Machine Learning",
+  "Computer Vision",
+];
+
+const heroStats = [
+  { value: "2+", label: "năm kinh nghiệm" },
+  { value: "4", label: "lĩnh vực chính" },
+];
 ---
 
 <section id="home" class="hero container section">
-  <div class="hero__content">
+  <div class="hero__copy">
     <p class="eyebrow">{profile.greeting}</p>
-    <h1>{profile.name}</h1>
-    <p class="hero__position">{profile.position}</p>
+
+    <div class="hero__headline">
+      <h1>{profile.name}</h1>
+      <p class="hero__position">{profile.position}</p>
+    </div>
+
     <p class="hero__summary">{profile.summary}</p>
 
     <div class="hero__actions">
@@ -29,18 +44,44 @@ const certificatesPath = `${base}certificates/`;
           </a>
         )
       }
-      <a class="button button--secondary" href={certificatesPath}> Cert </a>
+      <a class="button button--secondary" href={`${base}certificates/`}>
+        Chứng chỉ
+      </a>
     </div>
+
+    <ul class="hero__highlights" aria-label="Điểm mạnh nổi bật">
+      {heroHighlights.map((item) => <li>{item}</li>)}
+    </ul>
   </div>
 
-  <div class="hero__visual">
-    <img
-      class="hero__avatar"
-      src={avatarPath}
-      alt={`Ảnh đại diện của ${profile.name}`}
-      width="520"
-      height="520"
-      loading="eager"
-    />
+  <div class="hero__panel">
+    <div class="hero__portrait">
+      <img
+        class="hero__avatar"
+        src={avatarPath}
+        alt={`Ảnh đại diện của ${profile.name}`}
+        width="520"
+        height="520"
+        loading="eager"
+      />
+
+      <div class="hero__floating-card">
+        <span class="eyebrow">Current focus</span>
+        <strong>Product engineering with systems thinking</strong>
+        <p>
+          Mình thích biến nhu cầu vận hành phức tạp thành giao diện gọn, rõ và
+          dễ mở rộng.
+        </p>
+      </div>
+    </div>
+
+    <dl class="hero__stats">
+      {heroStats.map((stat) => (
+        <div class="hero__stat">
+          <dt>{stat.value}</dt>
+          <dd>{stat.label}</dd>
+        </div>
+      ))}
+    </dl>
   </div>
 </section>

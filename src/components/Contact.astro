@@ -4,11 +4,12 @@ import { profile } from "../data/profile";
 
 <section id="contact" class="section section--accent">
   <div class="container contact-panel">
-    <div>
+    <div class="contact-panel__copy">
       <p class="eyebrow">Liên hệ</p>
-      <h2>Hãy cùng xây dựng một sản phẩm hữu ích</h2>
+      <h2 class="section-title__heading">Hãy cùng xây một sản phẩm rõ ràng, đẹp và đủ bền để scale tiếp.</h2>
       <p>
-        Bạn có thể liên hệ với tôi qua email hoặc các mạng xã hội bên dưới.
+        Nếu bạn đang cần một người làm product-facing frontend, backoffice hoặc
+        các bài toán có yếu tố CV & AI, mình sẵn sàng trao đổi.
       </p>
     </div>
 
@@ -17,14 +18,12 @@ import { profile } from "../data/profile";
         {profile.email}
       </a>
 
-      <div class="social-links">
-        {
-          profile.socials.map((social) => (
-            <a href={social.url} target="_blank" rel="noopener noreferrer">
-              {social.label}
-            </a>
-          ))
-        }
+      <div class="social-links" aria-label="Mạng xã hội">
+        {profile.socials.map((social) => (
+          <a href={social.url} target="_blank" rel="noopener noreferrer">
+            {social.label}
+          </a>
+        ))}
       </div>
     </div>
   </div>

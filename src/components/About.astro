@@ -1,36 +1,70 @@
 ---
 import { profile } from "../data/profile";
+
+const focusCards = [
+  {
+    title: "Web systems",
+    text: "Xây sản phẩm có cấu trúc tốt, dễ mở rộng và tối ưu cho đội ngũ vận hành.",
+  },
+  {
+    title: "Backoffice",
+    text: "Thiết kế luồng quản trị rõ ràng cho nghiệp vụ phức tạp, nhiều trạng thái.",
+  },
+  {
+    title: "Machine Learning",
+    text: "Ứng dụng ML cho bài toán dự đoán, phân loại và tối ưu quy trình.",
+  },
+  {
+    title: "Computer Vision",
+    text: "Ứng dụng AI/vision cho bài toán y tế và tự động hóa quy trình.",
+  },
+];
 ---
 
 <section id="about" class="section section--muted">
-  <div class="container split-section">
-    <div>
+  <div class="container split-section about">
+    <div class="section-copy">
       <p class="eyebrow">Về tôi</p>
-      <h2>
-        Thiết kế hệ thống đơn giản, hiệu quả, bền vững và mang lại giá trị.
-      </h2>
+      <h2>Thiết kế và xây dựng sản phẩm tối ưu, hiệu quả, bền vững và mang lại giá trị lâu dài.</h2>
+      <p class="section-intro">
+        Tập trung vào trải nghiệm rõ ràng, cấu trúc bền và các luồng nghiệp vụ
+        đủ chắc để đội ngũ vận hành yên tâm.
+      </p>
     </div>
 
-    <div class="prose">
-      {profile.about.map((paragraph) => <p>{paragraph}</p>)}
-      <p class="location">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-          ><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
-            id="SVGRepo_tracerCarrier"
-            stroke-linecap="round"
-            stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier">
+    <div class="about__stack">
+      <div class="prose">
+        <p>{profile.about[0]}</p>
+        <p class="location">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
             <path
               d="M20 11.1755C20 15.6907 16.4183 21 12 21C7.58172 21 4 15.6907 4 11.1755C4 6.66029 7.58172 3 12 3C16.4183 3 20 6.66029 20 11.1755Z"
-              stroke="#363853"
-              stroke-width="1.5"></path>
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
             <path
               d="M9.5 10.5C9.5 9.11929 10.6193 8 12 8C13.3807 8 14.5 9.11929 14.5 10.5C14.5 11.8807 13.3807 13 12 13C10.6193 13 9.5 11.8807 9.5 10.5Z"
-              stroke="#0095FF"
-              stroke-width="1.5"></path>
-          </g></svg
-        >
-        {profile.location}
-      </p>
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+          </svg>
+          {profile.location}
+        </p>
+      </div>
+
+      <div class="about__cards">
+        {focusCards.map((card) => (
+          <article class="mini-card">
+            <p class="mini-card__label">{card.title}</p>
+            <p>{card.text}</p>
+          </article>
+        ))}
+      </div>
     </div>
   </div>
 </section>

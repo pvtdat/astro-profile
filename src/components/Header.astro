@@ -6,47 +6,41 @@ const navigationItems = [
   { label: "Kỹ năng", href: "#skills" },
   { label: "Kinh nghiệm", href: "#experience" },
   { label: "Dự án", href: "#projects" },
-  { label: "Liên hệ", href: "#contact" },
 ];
 ---
 
 <header class="site-header">
   <nav class="container navigation" aria-label="Điều hướng chính">
-    <a class="logo" href={base} aria-label="Về trang chủ">{`<DP />`}</a>
+    <a class="logo" href={base} aria-label="Về trang chủ">
+      <span class="logo__mark">DP</span>
+      <span class="logo__text">
+        <strong>Dat Pham</strong>
+        <span>Software Engineer</span>
+      </span>
+    </a>
 
-    <ul class="navigation__list">
-      {
-        navigationItems.map((item) => (
-          <li
-            class="navigation__item"
-            data-nav-item
-            data-section={item.href.slice(1)}
-          >
-            <a href={`${base}${item.href}`}>
-              <span>{item.label}</span>
-              <span class="navigation__highlight" aria-hidden="true">
-                <svg
-                  width="80"
-                  height="10"
-                  viewBox="0 0 80 10"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill="currentColor"
-                    d="
-                      M1 5
-                      C18 7.4 62 7.4 79 5
-                      C62 4.2 18 4.2 1 5
-                      Z
-                    "
-                  />
-                </svg>
-              </span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="navigation__cluster">
+      <ul class="navigation__list">
+        {
+          navigationItems.map((item) => (
+            <li
+              class="navigation__item"
+              data-nav-item
+              data-section={item.href.slice(1)}
+            >
+              <a href={`${base}${item.href}`}>
+                <span>{item.label}</span>
+                <span class="navigation__highlight" aria-hidden="true" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a class="button button--secondary navigation__cta" href="#contact">
+        Liên hệ
+      </a>
+    </div>
   </nav>
 </header>
 
