@@ -651,7 +651,7 @@ ul {
   font-family: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
   font-size: 2.1rem;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.2;
 }
 
 .hero__stat dd {
@@ -1108,7 +1108,7 @@ ul {
 
 .certificate-feature__body h2 {
   margin-bottom: 0;
-  font-size: clamp(1.8rem, 2.2vw, 2.8rem);
+  font-size: clamp(2.2rem, 2.2vw, 2.8rem);
   line-height: 1.05;
 }
 
@@ -1229,7 +1229,7 @@ ul {
 
 .certificate-card__body h2 {
   margin-bottom: 0;
-  font-size: 1.55rem;
+  font-size: 2rem;
   line-height: 1.2;
 }
 
@@ -1305,6 +1305,9 @@ ul {
 .certificate-lightbox__bar p {
   margin: 0;
   font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .certificate-lightbox__bar button {
@@ -1380,11 +1383,15 @@ ul {
   }
 
   .section {
-    padding-block: 78px;
+    padding-block: 64px;
   }
 
   .section--accent {
-    padding-block: 72px;
+    padding-block: 64px;
+  }
+
+  .section-copy {
+    padding-block: 48px 24px;
   }
 
   .navigation,
@@ -1476,7 +1483,7 @@ ul {
   }
 
   .certificate-card__body h2 {
-    font-size: 1.3rem;
+    font-size: 2rem;
   }
 
   .certificate-lightbox {
@@ -1492,7 +1499,10 @@ ul {
 
   .certificate-lightbox__bar p {
     font-size: 16px;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
   }
 
   .certificate-lightbox__close {
@@ -1522,6 +1532,18 @@ ul {
 
   h2 {
     font-size: clamp(1.9rem, 10vw, 3rem);
+  }
+
+  .section {
+    padding-block: 54px;
+  }
+
+  .section--accent {
+    padding-block: 54px;
+  }
+
+  .section-copy {
+    padding-block: 38px 20px;
   }
 
   .hero__summary,
