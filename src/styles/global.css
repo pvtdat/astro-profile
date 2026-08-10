@@ -1558,6 +1558,12 @@ ul {
     padding: 18px;
   }
 
+  .certificate-lightbox__close {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+  }
+
   .certificate-hero__actions {
     flex-direction: column;
   }
