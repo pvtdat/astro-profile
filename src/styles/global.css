@@ -1292,10 +1292,14 @@ ul {
 .certificate-lightbox__close {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 7%);
   color: var(--text);
   cursor: pointer;
+  padding: 0;
 }
 
 .certificate-lightbox__close:hover {
@@ -1308,18 +1312,6 @@ ul {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.certificate-lightbox__bar button {
-  width: 40px;
-  height: 40px;
-  color: var(--text);
-  font-size: 1.8rem;
-  line-height: 1;
-  background: rgb(255 255 255 / 7%);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  cursor: pointer;
 }
 
 .certificate-lightbox>img {
@@ -1492,8 +1484,14 @@ ul {
     border-radius: 14px;
   }
 
+  .certificate-lightbox__close {
+    border: none;
+    background: transparent;
+  }
+
   .certificate-lightbox__bar {
     min-height: 54px;
+    gap: 14px;
     padding: 10px 12px 10px 16px;
   }
 
@@ -1503,15 +1501,6 @@ ul {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 100%;
-  }
-
-  .certificate-lightbox__close {
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-    min-width: 40px;
-    min-height: 40px;
-    flex-basis: 40px;
   }
 
   .certificate-lightbox>img {
@@ -1559,15 +1548,6 @@ ul {
 
   .contact-panel {
     padding: 18px;
-  }
-
-  .certificate-lightbox__close {
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-    min-width: 40px;
-    min-height: 40px;
-    flex-basis: 40px;
   }
 
   .certificate-hero__actions {
