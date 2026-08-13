@@ -32,4 +32,21 @@ export const certificates: Certificate[] = [
       "Model Evaluation",
     ],
   },
+  {
+    title: "Machine Learning: K-Nearest Neighbors",
+    issuer: "Codecademy",
+    issuedAt: "2026",
+    image: "certificates/k-nearest-neighbors.png",
+    summary:
+      "Hoàn thành khóa học Machine Learning về thuật toán K-Nearest Neighbors (KNN), tập trung vào bài toán phân loại dữ liệu dựa trên khoảng cách và độ tương đồng giữa các điểm dữ liệu. Thực hành chuẩn hóa dữ liệu, lựa chọn số lượng hàng xóm K, xây dựng mô hình KNN, chia dữ liệu thành Training, Validation và Test Set, đồng thời đánh giá khả năng dự đoán của mô hình thông qua bài toán phân loại thực tế.",
+    skills: [
+      "Machine Learning",
+      "K-Nearest Neighbors",
+      "Classification",
+      "Supervised Learning",
+      "Distance Metrics",
+      "Data Normalization",
+      "Model Evaluation",
+    ],
+  },
 ];
