@@ -40,21 +40,121 @@ const navigationItems = [
       <a class="button button--secondary navigation__cta" href="#contact">
         Liên hệ
       </a>
+
+      <button
+        id="mobile-menu-toggle"
+        class="navigation__toggle"
+        type="button"
+        aria-label="Mở menu điều hướng"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span class="navigation__toggle-icon">
+          <span class="navigation__toggle-bar"></span>
+          <span class="navigation__toggle-bar"></span>
+          <span class="navigation__toggle-bar"></span>
+        </span>
+      </button>
     </div>
   </nav>
+
+  <div
+    id="mobile-menu-backdrop"
+    class="mobile-menu-backdrop"
+    aria-hidden="true"
+  >
+  </div>
+  <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+    <ul class="mobile-menu__list">
+      {
+        navigationItems.map((item) => (
+          <li
+            class="mobile-menu__item"
+            data-mobile-nav-item
+            data-section={item.href.slice(1)}
+          >
+            <a href={`${base}${item.href}`}>
+              <span>{item.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="mobile-menu__actions">
+      <a
+        class="button button--primary mobile-menu__cta"
+        href="#contact"
+        data-mobile-close
+      >
+        Liên hệ
+      </a>
+    </div>
+  </div>
 </header>
 
 <script>
   const navItems = Array.from(document.querySelectorAll("[data-nav-item]"));
+  const mobileNavItems = Array.from(
+    document.querySelectorAll("[data-mobile-nav-item]"),
+  );
+  const mobileToggleBtn = document.getElementById("mobile-menu-toggle");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const mobileBackdrop = document.getElementById("mobile-menu-backdrop");
+  const mobileCloseTriggers = document.querySelectorAll("[data-mobile-close]");
 
-  if (navItems.length > 0) {
+  let isMobileMenuOpen = false;
+
+  const toggleMobileMenu = (open?: boolean) => {
+    isMobileMenuOpen = open ?? !isMobileMenuOpen;
+
+    if (mobileToggleBtn) {
+      mobileToggleBtn.classList.toggle("is-open", isMobileMenuOpen);
+      mobileToggleBtn.setAttribute("aria-expanded", String(isMobileMenuOpen));
+      mobileToggleBtn.setAttribute(
+        "aria-label",
+        isMobileMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng",
+      );
+    }
+
+    if (mobileMenu) {
+      mobileMenu.classList.toggle("is-open", isMobileMenuOpen);
+      mobileMenu.setAttribute("aria-hidden", String(!isMobileMenuOpen));
+    }
+
+    if (mobileBackdrop) {
+      mobileBackdrop.classList.toggle("is-open", isMobileMenuOpen);
+      mobileBackdrop.setAttribute("aria-hidden", String(!isMobileMenuOpen));
+    }
+
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+  };
+
+  if (mobileToggleBtn) {
+    mobileToggleBtn.addEventListener("click", () => toggleMobileMenu());
+  }
+
+  if (mobileBackdrop) {
+    mobileBackdrop.addEventListener("click", () => toggleMobileMenu(false));
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isMobileMenuOpen) {
+      toggleMobileMenu(false);
+    }
+  });
+
+  mobileCloseTriggers.forEach((trigger) => {
+    trigger.addEventListener("click", () => toggleMobileMenu(false));
+  });
+
+  if (navItems.length > 0 || mobileNavItems.length > 0) {
     let currentActiveId = window.location.hash.replace("#", "");
     const headerOffset = 96;
     const targetLineOffset = 24;
     const contactSectionId = "contact";
     const footerElement = document.querySelector("footer.site-footer");
 
-    if (!currentActiveId) {
+    if (!currentActiveId && navItems.length > 0) {
       currentActiveId = navItems[0]?.getAttribute("data-section") ?? "";
     }
 
@@ -71,6 +171,11 @@ const navigationItems = [
             link.removeAttribute("aria-current");
           }
         }
+      });
+
+      mobileNavItems.forEach((item) => {
+        const isActive = item.getAttribute("data-section") === currentActiveId;
+        item.classList.toggle("is-active", isActive);
       });
     };
 
@@ -136,29 +241,40 @@ const navigationItems = [
       }
     };
 
+    const handleNavClick = (item: Element, event: Event) => {
+      const sectionId = item.getAttribute("data-section");
+      if (!sectionId) return;
+      const sectionElement = document.getElementById(sectionId);
+      if (!sectionElement) return;
+
+      event.preventDefault();
+
+      if (isMobileMenuOpen) {
+        toggleMobileMenu(false);
+      }
+
+      currentActiveId = sectionId;
+      applyActiveState();
+
+      const targetY = sectionElement.offsetTop - headerOffset;
+      window.scrollTo({
+        top: Math.max(0, targetY),
+        behavior: "smooth",
+      });
+
+      history.replaceState(null, "", `#${sectionId}`);
+    };
+
     navItems.forEach((item) => {
       const link = item.querySelector("a");
       if (!link) return;
+      link.addEventListener("click", (e) => handleNavClick(item, e));
+    });
 
-      link.addEventListener("click", (event) => {
-        const sectionId = item.getAttribute("data-section");
-        if (!sectionId) return;
-        const sectionElement = document.getElementById(sectionId);
-        if (!sectionElement) return;
-
-        event.preventDefault();
-
-        currentActiveId = sectionId;
-        applyActiveState();
-
-        const targetY = sectionElement.offsetTop - headerOffset;
-        window.scrollTo({
-          top: Math.max(0, targetY),
-          behavior: "smooth",
-        });
-
-        history.replaceState(null, "", `#${sectionId}`);
-      });
+    mobileNavItems.forEach((item) => {
+      const link = item.querySelector("a");
+      if (!link) return;
+      link.addEventListener("click", (e) => handleNavClick(item, e));
     });
 
     window.addEventListener("scroll", updateActiveSectionByViewport, {

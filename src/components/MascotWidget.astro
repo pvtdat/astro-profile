@@ -1,0 +1,352 @@
+---
+const base = import.meta.env.BASE_URL;
+const mascotIcon = `${base}icons8-goat-outline-96.png`;
+---
+
+<div id="mascot-widget" class="mascot-widget" aria-live="polite">
+  <!-- Speech Bubble -->
+  <div id="mascot-bubble" class="mascot-bubble" role="tooltip">
+    <span class="mascot-bubble__text">Xin chào! 🐐✨</span>
+  </div>
+
+  <div class="mascot-body">
+    <!-- Dynamic Shadow -->
+    <div class="mascot-shadow"></div>
+
+    <!-- Mascot Button -->
+    <button
+      id="mascot-btn"
+      class="mascot-button"
+      type="button"
+      aria-label="Linh vật tương tác"
+    >
+      <img
+        src={mascotIcon}
+        alt="Linh vật Dê"
+        width="64"
+        height="64"
+        class="mascot-img"
+        loading="lazy"
+      />
+    </button>
+  </div>
+</div>
+
+<style>
+  .mascot-widget {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 85;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    pointer-events: none;
+    user-select: none;
+    perspective: 1000px;
+  }
+
+  .mascot-bubble {
+    position: absolute;
+    bottom: 84px;
+    left: -4px;
+    width: max-content;
+    max-width: min(280px, calc(100vw - 48px));
+    padding: 10px 14px;
+    background: rgba(10, 22, 36, 0.95);
+    border: 1px solid rgb(108 235 213 / 35%);
+    border-radius: 14px;
+    box-shadow:
+      0 10px 30px rgb(0 0 0 / 50%),
+      inset 0 0 10px rgb(108 235 213 / 12%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    white-space: normal;
+    word-break: break-word;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px) scale(0.95);
+    transition:
+      opacity 250ms ease,
+      transform 250ms ease,
+      visibility 250ms ease;
+    pointer-events: auto;
+    z-index: 10;
+  }
+
+  .mascot-bubble.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+  }
+
+  .mascot-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 32px;
+    transform: rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background: rgba(10, 22, 36, 0.95);
+    border-right: 1px solid rgb(108 235 213 / 35%);
+    border-bottom: 1px solid rgb(108 235 213 / 35%);
+  }
+
+  .mascot-bubble__text {
+    display: block;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  .mascot-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    width: 72px;
+    height: 72px;
+    transform-style: preserve-3d;
+  }
+
+  .mascot-button {
+    pointer-events: auto;
+    position: relative;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    background: radial-gradient(
+      circle at 35% 25%,
+      rgba(180, 255, 245, 0.45) 0%,
+      rgba(108, 235, 213, 0.22) 45%,
+      rgba(8, 18, 30, 0.95) 90%
+    );
+    border: 1px solid rgb(108 235 213 / 45%);
+    border-radius: 50%;
+    box-shadow:
+      0 16px 36px rgb(0 0 0 / 55%),
+      inset 0 2px 4px rgb(255 255 255 / 45%),
+      inset 0 -4px 10px rgb(108 235 213 / 25%),
+      0 0 24px rgb(108 235 213 / 20%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+    transform-style: preserve-3d;
+    animation: mascot3DFloat 5.6s ease-in-out infinite;
+    transition:
+      border-color 240ms ease,
+      box-shadow 240ms ease;
+  }
+
+  .mascot-img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgb(108 235 213 / 40%))
+      drop-shadow(0 2px 4px rgb(0 0 0 / 50%));
+    transform: translateZ(12px);
+    transition: transform 240ms ease;
+  }
+
+  .mascot-shadow {
+    position: absolute;
+    bottom: -4px;
+    z-index: 1;
+    width: 52px;
+    height: 9px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    filter: blur(4px);
+    animation: shadow3DFloat 5.6s ease-in-out infinite;
+  }
+
+  .mascot-button:hover {
+    border-color: var(--primary);
+    box-shadow:
+      0 20px 42px rgb(108 235 213 / 50%),
+      inset 0 2px 6px rgb(255 255 255 / 65%),
+      inset 0 -4px 12px rgb(108 235 213 / 35%),
+      0 0 30px rgb(108 235 213 / 35%);
+    animation-play-state: paused;
+  }
+
+  .mascot-button:hover .mascot-img {
+    transform: translateZ(20px) scale(1.1);
+  }
+
+  /* Seamless 3D Oscillating Floating keyframes */
+  @keyframes mascot3DFloat {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg) rotateZ(0deg);
+    }
+    20% {
+      transform: translate3d(14px, -18px, 15px) rotateY(14deg) rotateX(-8deg)
+        rotateZ(4deg);
+    }
+    40% {
+      transform: translate3d(26px, -4px, 5px) rotateY(20deg) rotateX(5deg)
+        rotateZ(-3deg);
+    }
+    60% {
+      transform: translate3d(15px, -16px, -12px) rotateY(-10deg) rotateX(-6deg)
+        rotateZ(-6deg);
+    }
+    80% {
+      transform: translate3d(-5px, -8px, -6px) rotateY(-16deg) rotateX(3deg)
+        rotateZ(4deg);
+    }
+  }
+
+  @keyframes shadow3DFloat {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.6;
+    }
+    20% {
+      transform: translate3d(14px, 0, 0) scale(0.55);
+      opacity: 0.2;
+    }
+    40% {
+      transform: translate3d(26px, 0, 0) scale(1.12);
+      opacity: 0.78;
+    }
+    60% {
+      transform: translate3d(15px, 0, 0) scale(0.58);
+      opacity: 0.28;
+    }
+    80% {
+      transform: translate3d(-5px, 0, 0) scale(0.92);
+      opacity: 0.55;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .mascot-widget {
+      bottom: 20px;
+      left: 20px;
+    }
+
+    .mascot-bubble {
+      bottom: 72px;
+      left: -2px;
+      max-width: min(240px, calc(100vw - 40px));
+      padding: 8px 12px;
+    }
+
+    .mascot-bubble::after {
+      left: 24px;
+    }
+
+    .mascot-body {
+      width: 58px;
+      height: 58px;
+    }
+
+    .mascot-button {
+      width: 52px;
+      height: 52px;
+    }
+
+    .mascot-img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mascot-button,
+    .mascot-shadow {
+      animation: none !important;
+    }
+  }
+</style>
+
+<script>
+  const mascotWidget = document.getElementById("mascot-widget");
+  const mascotBtn = document.getElementById("mascot-btn");
+  const mascotBubble = document.getElementById("mascot-bubble");
+  const bubbleText = mascotBubble?.querySelector(".mascot-bubble__text");
+
+  const messages = [
+    "Hey, mình là trợ lý của Đạt! 👋",
+    "Khám phá portfolio cùng mình nhé!",
+    "Chúc bạn một ngày tuyệt vời! 🫠",
+    "Cần tìm thông tin gì cứ click nhé! 🫣",
+    "Muốn biết Đạt đang làm gì không? 👀",
+    "Code, AI hay ý tưởng mới? Đạt đều thích! 💻✨",
+    "Có project hay? Nói chuyện với Đạt nhé! 🤝",
+    "Đừng chỉ xem, hãy kết nối nhé! 💬",
+    "Một cú click để hiểu Đạt hơn! 😎",
+    "Có cơ hội hợp tác? Mình biết người phù hợp đấy! 👀",
+    "Đạt đang chờ một project thú vị tiếp theo!",
+    "Bạn có ý tưởng, Đạt có code! 💡💻",
+    "Build. Learn. Improve. Repeat. 🔁",
+    "Turning ideas into products. ✨",
+    "Keep building, keep learning. 💪",
+    "Code with purpose. Build with passion. 💻",
+  ];
+
+  let messageIndex = 0;
+  let bubbleTimeout: number | undefined;
+
+  if (mascotBtn && mascotBubble) {
+    const showMessage = (customMsg?: string) => {
+      if (bubbleText) {
+        bubbleText.textContent = customMsg || messages[messageIndex];
+        messageIndex = (messageIndex + 1) % messages.length;
+      }
+
+      mascotBubble.classList.add("is-active");
+
+      if (bubbleTimeout) clearTimeout(bubbleTimeout);
+      bubbleTimeout = window.setTimeout(() => {
+        mascotBubble.classList.remove("is-active");
+      }, 3500);
+    };
+
+    // Initial greeting after 2 seconds
+    setTimeout(() => {
+      showMessage(messages[0]);
+    }, 2000);
+
+    // Interactive 3D tilt tracking on hover
+    mascotBtn.addEventListener("mousemove", (e) => {
+      const rect = mascotBtn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      const tiltX = (y / (rect.height / 2)) * -14;
+      const tiltY = (x / (rect.width / 2)) * 14;
+
+      mascotBtn.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.15)`;
+    });
+
+    mascotBtn.addEventListener("mouseenter", () => {
+      showMessage();
+    });
+
+    mascotBtn.addEventListener("mouseleave", () => {
+      mascotBtn.style.transform = "";
+    });
+
+    mascotBtn.addEventListener("click", () => {
+      showMessage();
+      mascotBtn.animate(
+        [
+          { transform: "scale(1) rotate(0deg)" },
+          { transform: "scale(1.25) rotateY(180deg) rotateZ(12deg)" },
+          { transform: "scale(1) rotate(0deg)" },
+        ],
+        { duration: 450, easing: "cubic-bezier(0.175, 0.885, 0.32, 1.275)" },
+      );
+    });
+  }
+</script>
