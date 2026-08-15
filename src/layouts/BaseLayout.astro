@@ -41,7 +41,60 @@ const goatcounterEndpoint =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#06101b" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
+
+    <script is:inline>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem("theme");
+          var theme =
+            storedTheme ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+          var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute(
+              "content",
+              theme === "light" ? "#f8fafc" : "#06101b"
+            );
+          }
+        } catch (e) {}
+      })();
+
+      window.addEventListener("storage", function (e) {
+        if (
+          e.key === "theme" &&
+          (e.newValue === "light" || e.newValue === "dark")
+        ) {
+          document.documentElement.setAttribute("data-theme", e.newValue);
+          var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute(
+              "content",
+              e.newValue === "light" ? "#f8fafc" : "#06101b"
+            );
+          }
+        }
+      });
+
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", function (e) {
+          if (!localStorage.getItem("theme")) {
+            var newTheme = e.matches ? "dark" : "light";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+              metaThemeColor.setAttribute(
+                "content",
+                newTheme === "light" ? "#f8fafc" : "#06101b"
+              );
+            }
+          }
+        });
+    </script>
 
     <link rel="icon" type="image/svg+xml" href={faviconPath} />
     <link rel="canonical" href={canonicalURL} />

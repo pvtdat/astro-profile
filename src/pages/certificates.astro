@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 import { certificates } from "../data/certificates";
 import { profile } from "../data/profile";
 import { getSecret } from "astro:env/server";
@@ -187,6 +188,8 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
             </a>
           </li>
         </ul>
+
+        <ThemeToggle id="certificate-theme-toggle" />
 
         <a class="button button--secondary navigation__cta" href={base}>
           Về trang chủ
