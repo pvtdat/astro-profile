@@ -49,4 +49,21 @@ export const certificates: Certificate[] = [
       "Model Evaluation",
     ],
   },
+  {
+    title: "Machine Learning: Random Forests & Decision Trees",
+    issuer: "Codecademy",
+    issuedAt: "2026",
+    image: "certificates/random-forests-decision-trees.png",
+    summary:
+      "Hoàn thành khóa học Machine Learning về Decision Trees và Random Forests, tập trung vào cách xây dựng cây quyết định để giải quyết bài toán phân loại và kết hợp nhiều cây thành mô hình Random Forest. Thực hành lựa chọn đặc trưng và điều kiện phân chia dữ liệu, xây dựng và đánh giá mô hình, đồng thời sử dụng phương pháp ensemble để giảm overfitting và cải thiện khả năng dự đoán trên dữ liệu mới.",
+    skills: [
+      "Machine Learning",
+      "Decision Trees",
+      "Random Forests",
+      "Classification",
+      "Supervised Learning",
+      "Ensemble Learning",
+      "Model Evaluation",
+    ],
+  },
 ];
