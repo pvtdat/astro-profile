@@ -19,7 +19,7 @@ export const certificates: Certificate[] = [
   },
   {
     title: "Machine Learning: Introduction with Regression",
-    issuer: "Codeacademy",
+    issuer: "Codecademy",
     issuedAt: "2026",
     image: "certificates/regression.png",
     summary:
