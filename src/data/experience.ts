@@ -43,7 +43,7 @@ export const experiences: ExperienceItem[] = [
       "Nghiên cứu và triển khai các mô hình **Object Detection** bằng **YOLO11** và **OpenCV** cho bài toán y tế.",
     ],
     logo: {
-      src: "/experience/dxp-software.png",
+      src: "experience/dxp-software.png",
       alt: "DXP Software",
     },
   },
@@ -63,7 +63,7 @@ export const experiences: ExperienceItem[] = [
       "Phát triển kỹ năng **STEM**, làm việc nhóm và tư duy kỹ thuật thông qua các dự án Robotics.",
     ],
     logo: {
-      src: "/experience/mindx-technology-school.png",
+      src: "experience/mindx-technology-school.png",
       alt: "MindX Technology School",
     },
   },
@@ -88,7 +88,7 @@ export const experiences: ExperienceItem[] = [
       "Thực hiện các đồ án kết hợp giữa **Software Development** và **Data Science**, từ xây dựng hệ thống đến xử lý, phân tích và khai thác dữ liệu.",
     ],
     logo: {
-      src: "/experience/ton-duc-thang-university-square.png",
+      src: "experience/ton-duc-thang-university-square.png",
       alt: "Ton Duc Thang University",
     },
   },
