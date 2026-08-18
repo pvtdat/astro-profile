@@ -1043,11 +1043,9 @@ ul {
   height: 72px;
   overflow: hidden;
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       color-mix(in srgb, var(--primary) 34%, var(--surface) 66%),
-      color-mix(in srgb, var(--accent) 28%, var(--surface) 72%)
-    );
+      color-mix(in srgb, var(--accent) 28%, var(--surface) 72%));
   border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border));
   border-radius: 20px;
   box-shadow:
@@ -1709,7 +1707,6 @@ ul {
   .timeline__company-mark {
     width: 56px;
     height: 56px;
-    padding: 8px;
     border-radius: 16px;
   }
 
