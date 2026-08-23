@@ -66,4 +66,21 @@ export const certificates: Certificate[] = [
       "Model Evaluation",
     ],
   },
+  {
+    title: "Machine Learning: Clustering with K-Means",
+    issuer: "Codecademy",
+    issuedAt: "2026",
+    image: "certificates/k-means-clustering.png",
+    summary:
+      "Hoàn thành khóa học Machine Learning về Clustering với trọng tâm là thuật toán K-Means và K-Means++. Thực hành khám phá các nhóm tiềm ẩn trong dữ liệu không nhãn, xây dựng và đánh giá mô hình phân cụm, đồng thời áp dụng K-Means vào bài toán nhận diện chữ viết tay.",
+    skills: [
+      "Machine Learning",
+      "Unsupervised Learning",
+      "K-Means Clustering",
+      "K-Means++",
+      "Clustering",
+      "Data Analysis",
+      "Model Evaluation",
+    ],
+  },
 ];
