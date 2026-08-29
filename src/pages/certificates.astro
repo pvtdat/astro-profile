@@ -21,7 +21,8 @@ const goatcounterProfilePath = normalizePath(
   import.meta.env.GOATCOUNTER_PROFILE_PATH ?? defaultGoatcounterProfilePath,
 );
 const goatcounterCertificatePath = normalizePath(
-  import.meta.env.GOATCOUNTER_CERTIFICATES_PATH ?? `${goatcounterProfilePath}/certificates`,
+  import.meta.env.GOATCOUNTER_CERTIFICATES_PATH ??
+    `${goatcounterProfilePath}/certificates`,
 );
 const goatcounterBaseUrl =
   import.meta.env.PUBLIC_GOATCOUNTER_URL ?? "https://datpham.goatcounter.com";
@@ -101,7 +102,12 @@ if (goatcounterApiToken) {
       return parseRows(payload);
     };
 
-    mergeRows(await fetchRows([goatcounterProfilePath, goatcounterCertificatePath], 100));
+    mergeRows(
+      await fetchRows(
+        [goatcounterProfilePath, goatcounterCertificatePath],
+        100,
+      ),
+    );
 
     if (!visitCountByPath.has(goatcounterCertificatePath)) {
       mergeRows(await fetchRows([goatcounterCertificatePath], 10));
@@ -113,8 +119,10 @@ if (goatcounterApiToken) {
 
     if (import.meta.env.DEV) {
       console.debug("[GoatCounter API] Path counts:", {
-        [goatcounterProfilePath]: visitCountByPath.get(goatcounterProfilePath) ?? null,
-        [goatcounterCertificatePath]: visitCountByPath.get(goatcounterCertificatePath) ?? null,
+        [goatcounterProfilePath]:
+          visitCountByPath.get(goatcounterProfilePath) ?? null,
+        [goatcounterCertificatePath]:
+          visitCountByPath.get(goatcounterCertificatePath) ?? null,
       });
     }
   } catch (error) {
@@ -156,13 +164,44 @@ const sortedCertificates = [...certificates].sort((a, b) => {
   return yearB - yearA;
 });
 
+interface IssuerGroup {
+  id: string;
+  issuer: string;
+  count: number;
+  latestYear: string;
+  items: typeof certificates;
+}
+
+const issuerMap = new Map<string, typeof certificates>();
+for (const cert of sortedCertificates) {
+  const existing = issuerMap.get(cert.issuer) || [];
+  existing.push(cert);
+  issuerMap.set(cert.issuer, existing);
+}
+
+const issuerGroups: IssuerGroup[] = Array.from(issuerMap.entries()).map(
+  ([issuer, items]) => {
+    const slug = issuer
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    return {
+      id: `issuer-${slug}`,
+      issuer,
+      items,
+      count: items.length,
+      latestYear: items[0]?.issuedAt || "",
+    };
+  },
+);
+
 const featuredCertificate = sortedCertificates[0];
 const latestIssuedYear =
   sortedCertificates.reduce((latest, certificate) => {
     const issuedYear = Number.parseInt(certificate.issuedAt, 10);
     return Number.isNaN(issuedYear) ? latest : Math.max(latest, issuedYear);
   }, 0) || currentYear;
-const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issuer)).size;
+const uniqueIssuers = issuerGroups.length;
 ---
 
 <BaseLayout
@@ -184,7 +223,7 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
           <li class="navigation__item is-active">
             <a href="#certificate-top" aria-current="page">
               <span>Chứng chỉ</span>
-              <span class="navigation__highlight" aria-hidden="true" />
+              <span class="navigation__highlight" aria-hidden="true"></span>
             </a>
           </li>
         </ul>
@@ -204,11 +243,16 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
         <p class="eyebrow">Learning journey</p>
         <h1>Certificates</h1>
         <p class="certificate-hero__lead">
-          Những cột mốc ghi lại quá trình học hỏi, rèn luyện và phát triển chuyên môn của tôi.
+          Những cột mốc ghi lại quá trình học hỏi, rèn luyện và phát triển
+          chuyên môn của tôi.
         </p>
         <div class="certificate-hero__actions">
-          <a class="button button--primary" href="#certificate-gallery">Xem danh sách</a>
-          <a class="button button--secondary" href="#featured-certificate">Chứng chỉ nổi bật</a>
+          <a class="button button--primary" href="#certificate-gallery"
+            >Xem danh sách</a
+          >
+          <a class="button button--secondary" href="#featured-certificate"
+            >Chứng chỉ nổi bật</a
+          >
         </div>
         <dl class="certificate-hero__metrics" aria-label="Tổng quan chứng chỉ">
           <div class="certificate-metric">
@@ -232,139 +276,71 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
           data-goatcounter-debug={goatcounterDebugDataAttr}
         >
           <div class="certificate-live-stat">
-            <span class="certificate-live-stat__label">Certificates visits</span>
-            <strong class="certificate-live-stat__value" data-stat-value="certificates">{certificateVisitCountLabel}</strong>
+            <span class="certificate-live-stat__label">Certificates visits</span
+            >
+            <strong
+              class="certificate-live-stat__value"
+              data-stat-value="certificates"
+              >{certificateVisitCountLabel}</strong
+            >
             <span class="certificate-live-stat__source">GoatCounter</span>
           </div>
           <div class="certificate-live-stat">
             <span class="certificate-live-stat__label">Profile visits</span>
-            <strong class="certificate-live-stat__value" data-stat-value="profile">{profileVisitCountLabel}</strong>
+            <strong
+              class="certificate-live-stat__value"
+              data-stat-value="profile">{profileVisitCountLabel}</strong
+            >
             <span class="certificate-live-stat__source">GoatCounter</span>
           </div>
         </div>
       </div>
 
-      {featuredCertificate && (
-        <aside class="certificate-feature" id="featured-certificate">
-          <p class="certificate-feature__label">Featured credential</p>
-          <button
-            class="certificate-feature__preview"
-            type="button"
-            data-certificate-open
-            data-image={assetPath(featuredCertificate.image)}
-            data-title={featuredCertificate.title}
-            aria-label={`Xem ảnh lớn: ${featuredCertificate.title}`}
-          >
-            <img
-              src={assetPath(featuredCertificate.image)}
-              alt={`Chứng chỉ ${featuredCertificate.title} do ${featuredCertificate.issuer} cấp`}
-              width="1200"
-              height="360"
-              loading="eager"
-            />
-            <span class="certificate-feature__badge font-inter" aria-hidden="true">Xem ảnh</span>
-          </button>
-          <div class="certificate-feature__body">
-            <div class="certificate-feature__meta">
-              <span>{featuredCertificate.issuer}</span>
-              <span>{featuredCertificate.issuedAt}</span>
-            </div>
-            <h2 class="font-playfair">{featuredCertificate.title}</h2>
-            <p>{featuredCertificate.summary || "Mốc học tập tiêu biểu gần nhất trong hành trình của tôi."}</p>
-            <ul class="tag-list font-inter" aria-label="Kỹ năng nổi bật">
-              {featuredCertificate.skills.map((skill) => (
-                <li class="tag-list__item--core">{skill}</li>
-              ))}
-            </ul>
-            {featuredCertificate.credentialUrl && (
-              <a
-                class="certificate-card__credential"
-                href={featuredCertificate.credentialUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Xem credential <span aria-hidden="true">↗</span>
-              </a>
-            )}
-          </div>
-        </aside>
-      )}
-    </section>
-
-    <section class="certificate-gallery container" id="certificate-gallery" aria-label="Danh sách chứng chỉ">
-      <div class="certificate-gallery__header">
-        <div class="section-copy">
-          <p class="eyebrow">Selected records</p>
-          <h2>Danh sách chứng chỉ</h2>
-          <p class="section-intro">
-            Mỗi chứng chỉ bên dưới đại diện cho một giai đoạn học tập hoặc một kỹ năng tôi đã chủ động hoàn thành và duy trì.
-          </p>
-        </div>
-        <p class="certificate-gallery__note">
-          Tất cả thẻ đều có thể mở ảnh lớn để kiểm tra nội dung rõ hơn.
-        </p>
-      </div>
-
-      {sortedCertificates.length > 0 ? (
-        sortedCertificates.map((certificate, index) => (
-          <article
-            class:list={[
-              "certificate-card",
-              index === 0 && "certificate-card--featured",
-            ]}
-          >
+      {
+        featuredCertificate && (
+          <aside class="certificate-feature" id="featured-certificate">
+            <p class="certificate-feature__label">Featured credential</p>
             <button
-              class="certificate-card__preview"
+              class="certificate-feature__preview"
               type="button"
               data-certificate-open
-              data-image={assetPath(certificate.image)}
-              data-title={certificate.title}
-              aria-label={`Xem ảnh lớn: ${certificate.title}`}
+              data-image={assetPath(featuredCertificate.image)}
+              data-title={featuredCertificate.title}
+              aria-label={`Xem ảnh lớn: ${featuredCertificate.title}`}
             >
               <img
-                src={assetPath(certificate.image)}
-                alt={`Chứng chỉ ${certificate.title} cấp bởi ${certificate.issuer}`}
+                src={assetPath(featuredCertificate.image)}
+                alt={`Chứng chỉ ${featuredCertificate.title} do ${featuredCertificate.issuer} cấp`}
                 width="1200"
                 height="360"
-                loading={index === 0 ? "eager" : "lazy"}
+                loading="eager"
               />
-              <span class="certificate-card__zoom" aria-hidden="true">
-                <svg
-                  xmlns="https://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"
-                >
-                  <path d="M7 7h10v10" />
-                  <path d="M7 17 17 7" />
-                </svg>
+              <span
+                class="certificate-feature__badge font-inter"
+                aria-hidden="true"
+              >
+                Xem ảnh
               </span>
             </button>
-
-            <div class="certificate-card__body">
-              <div class="certificate-card__meta font-manrope">
-                <span>{certificate.issuer}</span>
-                <span>{certificate.issuedAt}</span>
+            <div class="certificate-feature__body">
+              <div class="certificate-feature__meta">
+                <span>{featuredCertificate.issuer}</span>
+                <span>{featuredCertificate.issuedAt}</span>
               </div>
-              <h2 class="font-playfair">{certificate.title}</h2>
-              <p class="certificate-card__summary">
-                {certificate.summary || "Một chứng chỉ ghi nhận nỗ lực học tập và kết quả thực hành ở mảng này."}
+              <h2 class="font-playfair">{featuredCertificate.title}</h2>
+              <p>
+                {featuredCertificate.summary ||
+                  "Mốc học tập tiêu biểu gần nhất trong hành trình của tôi."}
               </p>
-              <ul class="tag-list font-inter" aria-label="Kỹ năng">
-                {certificate.skills.map((skill) => (
-                  <li>{skill}</li>
+              <ul class="tag-list font-inter" aria-label="Kỹ năng nổi bật">
+                {featuredCertificate.skills.map((skill) => (
+                  <li class="tag-list__item--core">{skill}</li>
                 ))}
               </ul>
-              {certificate.credentialUrl && (
+              {featuredCertificate.credentialUrl && (
                 <a
                   class="certificate-card__credential"
-                  href={certificate.credentialUrl}
+                  href={featuredCertificate.credentialUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -372,14 +348,271 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
                 </a>
               )}
             </div>
-          </article>
-        ))
-      ) : (
-        <div class="certificate-empty">
-          <p class="eyebrow">No certificates yet</p>
-          <h2>Hiện chưa có chứng chỉ nào để hiển thị.</h2>
+          </aside>
+        )
+      }
+    </section>
+
+    <section
+      class="certificate-gallery container"
+      id="certificate-gallery"
+      aria-label="Danh sách chứng chỉ"
+    >
+      <div class="certificate-gallery__header">
+        <div class="certificate-gallery__title-group">
+          <p class="eyebrow">Selected records</p>
+          <h2>Danh sách chứng chỉ</h2>
+          <p class="section-intro">
+            Chứng chỉ được phân nhóm trực quan theo từng đơn vị cấp, với slider
+            tương tác mượt mà giúp bạn dễ dàng theo dõi hành trình học tập.
+          </p>
         </div>
-      )}
+
+        {
+          issuerGroups.length > 1 && (
+            <nav class="issuer-nav" aria-label="Lọc theo đơn vị cấp">
+              <div class="issuer-nav__scroll">
+                <button
+                  type="button"
+                  class="issuer-nav__pill is-active"
+                  data-issuer-pill="all"
+                >
+                  <span>Tất cả đơn vị</span>
+                  <span class="issuer-nav__count">{certificates.length}</span>
+                </button>
+                {issuerGroups.map((group) => (
+                  <button
+                    type="button"
+                    class="issuer-nav__pill"
+                    data-issuer-pill={group.id}
+                  >
+                    <span>{group.issuer}</span>
+                    <span class="issuer-nav__count">{group.count}</span>
+                  </button>
+                ))}
+              </div>
+            </nav>
+          )
+        }
+      </div>
+
+      {
+        issuerGroups.length > 0 ? (
+          issuerGroups.map((group) => (
+            <section
+              class="issuer-section"
+              id={group.id}
+              data-single-item={group.items.length <= 1 ? "true" : "false"}
+              aria-labelledby={`${group.id}-title`}
+            >
+              <div class="issuer-section__header">
+                <div class="issuer-section__info">
+                  <div class="issuer-section__badge-row">
+                    <span class="issuer-section__tag">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-shield-check-icon lucide-shield-check"
+                      >
+                        <>
+                          <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+                          <path d="m9 12 2 2 4-4" />
+                        </>
+                      </svg>
+                      <span style="line-height: 24px;">Đơn vị cấp</span>
+                    </span>
+                    <span class="issuer-section__count-badge">
+                      {group.count} chứng chỉ
+                    </span>
+                    <span class="issuer-section__year-badge">
+                      Cập nhật {group.latestYear}
+                    </span>
+                  </div>
+                  <h3
+                    id={`${group.id}-title`}
+                    class="issuer-section__title font-playfair"
+                  >
+                    {group.issuer}
+                  </h3>
+                </div>
+
+                <div
+                  class="carousel-controls"
+                  aria-label={`Điều khiển chứng chỉ ${group.issuer}`}
+                >
+                  <div class="carousel-counter font-manrope" aria-live="polite">
+                    <span data-carousel-current>01</span>
+                    <span class="carousel-counter__divider">/</span>
+                    <span data-carousel-total>
+                      {String(group.items.length).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <div class="carousel-controls__buttons">
+                    <button
+                      type="button"
+                      class="carousel-nav-btn carousel-nav-btn--prev"
+                      data-carousel-prev
+                      aria-label={`Chứng chỉ trước (${group.issuer})`}
+                      disabled
+                    >
+                      <svg
+                        xmlns="https://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m15 18-6-6 6-6" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="carousel-nav-btn carousel-nav-btn--next"
+                      data-carousel-next
+                      aria-label={`Chứng chỉ tiếp theo (${group.issuer})`}
+                      disabled={group.items.length <= 1}
+                    >
+                      <svg
+                        xmlns="https://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m9 18 6-6-6-6" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="carousel-container" data-carousel>
+                <div
+                  class="carousel-track"
+                  data-carousel-track
+                  tabindex="0"
+                  role="region"
+                  aria-roledescription="carousel"
+                  aria-label={`Danh sách chứng chỉ từ ${group.issuer}`}
+                >
+                  {group.items.map((certificate, index) => (
+                    <article
+                      class="certificate-card--slide"
+                      data-carousel-slide
+                      role="group"
+                      aria-roledescription="slide"
+                      aria-label={`${index + 1} / ${group.items.length}: ${certificate.title}`}
+                    >
+                      <button
+                        class="certificate-card__preview"
+                        type="button"
+                        data-certificate-open
+                        data-image={assetPath(certificate.image)}
+                        data-title={certificate.title}
+                        aria-label={`Xem ảnh lớn: ${certificate.title}`}
+                      >
+                        <img
+                          src={assetPath(certificate.image)}
+                          alt={`Chứng chỉ ${certificate.title} cấp bởi ${certificate.issuer}`}
+                          width="800"
+                          height="500"
+                          loading={index === 0 ? "eager" : "lazy"}
+                          draggable="false"
+                        />
+                        <span
+                          class="certificate-card__badge font-inter"
+                          aria-hidden="true"
+                        >
+                          Xem ảnh
+                        </span>
+                      </button>
+
+                      <div class="certificate-card__body">
+                        <div class="certificate-card__meta font-manrope">
+                          <span class="certificate-card__issuer-pill">
+                            {certificate.issuer}
+                          </span>
+                          <span class="certificate-card__year-pill">
+                            Năm {certificate.issuedAt}
+                          </span>
+                        </div>
+                        <h4 class="certificate-card__title font-playfair">
+                          {certificate.title}
+                        </h4>
+                        <p class="certificate-card__summary">
+                          {certificate.summary ||
+                            "Một chứng chỉ ghi nhận nỗ lực học tập và kết quả thực hành ở mảng này."}
+                        </p>
+                        <div class="certificate-card__footer">
+                          <ul class="tag-list font-inter" aria-label="Kỹ năng">
+                            {certificate.skills.map((skill) => (
+                              <li>{skill}</li>
+                            ))}
+                          </ul>
+                          {certificate.credentialUrl && (
+                            <a
+                              class="certificate-card__credential"
+                              href={certificate.credentialUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <span>Xem credential</span>
+                              <span aria-hidden="true">↗</span>
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                {group.items.length > 1 && (
+                  <div
+                    class="carousel-pagination"
+                    data-carousel-pagination
+                    aria-label={`Trang chứng chỉ ${group.issuer}`}
+                  >
+                    {group.items.map((_, i) => (
+                      <button
+                        type="button"
+                        class:list={[
+                          "carousel-pagination__dot",
+                          i === 0 && "is-active",
+                        ]}
+                        data-slide-index={i}
+                        aria-label={`Chuyển đến chứng chỉ ${i + 1} (${group.issuer})`}
+                        aria-current={i === 0 ? "true" : "false"}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          ))
+        ) : (
+          <div class="certificate-empty">
+            <p class="eyebrow">No certificates yet</p>
+            <h2>Hiện chưa có chứng chỉ nào để hiển thị.</h2>
+          </div>
+        )
+      }
     </section>
   </main>
 
@@ -404,8 +637,8 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
           stroke-linejoin="round"
           class="lucide lucide-x-icon lucide-x"
         >
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
         </svg>
       </button>
     </div>
@@ -429,14 +662,17 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
           stroke-linejoin="round"
           class="lucide lucide-arrow-big-up-dash-icon lucide-arrow-big-up-dash"
         >
-          <path d="M14 16a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h3.293a.707.707 0 0 0 .5-1.207l-6.939-6.939a1.207 1.207 0 0 0-1.708 0l-6.94 6.94a.707.707 0 0 0 .5 1.206H8a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1z" />
-          <path d="M9 20h6" />
+          <path
+            d="M14 16a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h3.293a.707.707 0 0 0 .5-1.207l-6.939-6.939a1.207 1.207 0 0 0-1.708 0l-6.94 6.94a.707.707 0 0 0 .5 1.206H8a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1z"
+          ></path>
+          <path d="M9 20h6"></path>
         </svg>
       </a>
     </div>
   </footer>
 
   <script>
+    // Lightbox modal logic
     const dialog = document.querySelector<HTMLDialogElement>(
       "[data-certificate-dialog]",
     );
@@ -450,10 +686,16 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
       "[data-certificate-close]",
     );
 
+    let isUserDragging = false;
+
     document
       .querySelectorAll<HTMLButtonElement>("[data-certificate-open]")
       .forEach((button) => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (e) => {
+          if (isUserDragging) {
+            e.preventDefault();
+            return;
+          }
           if (!dialog || !dialogImage || !dialogTitle) return;
           const title = button.dataset.title ?? "Certificate";
           dialogImage.src = button.dataset.image ?? "";
@@ -468,6 +710,205 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
       if (event.target === dialog) dialog.close();
     });
 
+    // Multi-instance Carousel Controller
+    const carouselContainers =
+      document.querySelectorAll<HTMLElement>("[data-carousel]");
+
+    carouselContainers.forEach((container) => {
+      const section = container.closest<HTMLElement>(".issuer-section");
+      const track = container.querySelector<HTMLElement>(
+        "[data-carousel-track]",
+      );
+      const prevBtn = section?.querySelector<HTMLButtonElement>(
+        "[data-carousel-prev]",
+      );
+      const nextBtn = section?.querySelector<HTMLButtonElement>(
+        "[data-carousel-next]",
+      );
+      const currentLabel = section?.querySelector<HTMLElement>(
+        "[data-carousel-current]",
+      );
+      const totalLabel = section?.querySelector<HTMLElement>(
+        "[data-carousel-total]",
+      );
+      const paginationDots = container.querySelectorAll<HTMLButtonElement>(
+        ".carousel-pagination__dot",
+      );
+      const slides = container.querySelectorAll<HTMLElement>(
+        "[data-carousel-slide]",
+      );
+
+      if (!track || slides.length === 0) return;
+
+      if (totalLabel) {
+        totalLabel.textContent = String(slides.length).padStart(2, "0");
+      }
+
+      const getSlideWidth = () => {
+        const firstSlide = slides[0];
+        if (!firstSlide) return track.clientWidth;
+        const style = window.getComputedStyle(track);
+        const gap = Number.parseFloat(style.gap) || 24;
+        return firstSlide.getBoundingClientRect().width + gap;
+      };
+
+      const updateUI = () => {
+        const slideWidth = getSlideWidth();
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        const currentScroll = track.scrollLeft;
+
+        let activeIndex = Math.round(currentScroll / slideWidth);
+        activeIndex = Math.max(0, Math.min(slides.length - 1, activeIndex));
+
+        if (currentLabel) {
+          currentLabel.textContent = String(activeIndex + 1).padStart(2, "0");
+        }
+
+        if (prevBtn) {
+          prevBtn.disabled = currentScroll <= 4;
+        }
+
+        if (nextBtn) {
+          nextBtn.disabled =
+            currentScroll >= maxScroll - 4 || slides.length <= 1;
+        }
+
+        paginationDots.forEach((dot, index) => {
+          const isActive = index === activeIndex;
+          dot.classList.toggle("is-active", isActive);
+          dot.setAttribute("aria-current", isActive ? "true" : "false");
+        });
+      };
+
+      const scrollToSlide = (index: number) => {
+        const slideWidth = getSlideWidth();
+        const targetScroll = Math.max(
+          0,
+          Math.min(track.scrollWidth - track.clientWidth, index * slideWidth),
+        );
+        track.scrollTo({
+          left: targetScroll,
+          behavior: "smooth",
+        });
+      };
+
+      prevBtn?.addEventListener("click", () => {
+        const slideWidth = getSlideWidth();
+        track.scrollBy({
+          left: -slideWidth,
+          behavior: "smooth",
+        });
+      });
+
+      nextBtn?.addEventListener("click", () => {
+        const slideWidth = getSlideWidth();
+        track.scrollBy({
+          left: slideWidth,
+          behavior: "smooth",
+        });
+      });
+
+      paginationDots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+          const index = Number.parseInt(dot.dataset.slideIndex ?? "0", 10);
+          scrollToSlide(index);
+        });
+      });
+
+      // Keyboard navigation
+      track.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          prevBtn?.click();
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          nextBtn?.click();
+        }
+      });
+
+      // Mouse Drag to Scroll
+      let isMouseDown = false;
+      let startX = 0;
+      let scrollLeftStart = 0;
+      let dragDistance = 0;
+
+      track.addEventListener("mousedown", (e) => {
+        isMouseDown = true;
+        isUserDragging = false;
+        dragDistance = 0;
+        startX = e.pageX - track.offsetLeft;
+        scrollLeftStart = track.scrollLeft;
+        track.classList.add("is-dragging");
+      });
+
+      const onMouseMove = (e: MouseEvent) => {
+        if (!isMouseDown) return;
+        const x = e.pageX - track.offsetLeft;
+        const walk = x - startX;
+        dragDistance = Math.abs(walk);
+        if (dragDistance > 6) {
+          isUserDragging = true;
+        }
+        track.scrollLeft = scrollLeftStart - walk;
+      };
+
+      const onMouseUp = () => {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        track.classList.remove("is-dragging");
+        setTimeout(() => {
+          isUserDragging = false;
+        }, 60);
+      };
+
+      track.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+
+      // Scroll listener with requestAnimationFrame
+      let ticking = false;
+      track.addEventListener(
+        "scroll",
+        () => {
+          if (!ticking) {
+            window.requestAnimationFrame(() => {
+              updateUI();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        },
+        { passive: true },
+      );
+
+      // Initial update
+      updateUI();
+    });
+
+    // Filter tabs: Show/hide issuer sections dynamically without jumping/scrolling
+    const issuerPills =
+      document.querySelectorAll<HTMLButtonElement>("[data-issuer-pill]");
+    const issuerSections =
+      document.querySelectorAll<HTMLElement>(".issuer-section");
+
+    issuerPills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        const targetId = pill.dataset.issuerPill;
+
+        issuerPills.forEach((p) => {
+          p.classList.toggle("is-active", p === pill);
+        });
+
+        issuerSections.forEach((section) => {
+          if (targetId === "all" || section.id === targetId) {
+            section.classList.remove("is-hidden");
+          } else {
+            section.classList.add("is-hidden");
+          }
+        });
+      });
+    });
+
+    // Goatcounter stats debug
     const statsRoot = document.querySelector<HTMLElement>(
       "[data-certificate-stats]",
     );
@@ -478,9 +919,11 @@ const uniqueIssuers = new Set(certificates.map((certificate) => certificate.issu
         const debugData = JSON.parse(debugRaw);
         console.debug("[GoatCounter Web Debug]", debugData);
       } catch (error) {
-        console.debug("[GoatCounter Web Debug] Failed to parse debug payload", error);
+        console.debug(
+          "[GoatCounter Web Debug] Failed to parse debug payload",
+          error,
+        );
       }
     }
-
   </script>
 </BaseLayout>
