@@ -25,27 +25,30 @@ import { projects } from "../data/projects";
               ))}
             </ul>
 
-            <div class="project-card__links">
-              {project.repository && (
-                <a
-                  href={project.repository}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Source code
-                </a>
-              )}
+            {project.repository ||
+              (project.demo && (
+                <div class="project-card__links">
+                  {project.repository && (
+                    <a
+                      href={project.repository}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Source code
+                    </a>
+                  )}
 
-              {project.demo && (
-                <a
-                  href={project.demo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Live demo
-                </a>
-              )}
-            </div>
+                  {project.demo && (
+                    <a
+                      href={project.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Live demo
+                    </a>
+                  )}
+                </div>
+              ))}
           </article>
         ))
       }
