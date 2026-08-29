@@ -41,6 +41,7 @@
   --logo-mark-bg: linear-gradient(135deg, #6cebd5, #dffdf8);
   --logo-mark-color: #05131b;
   --logo-mark-shadow: 0 12px 28px rgb(108 235 213 / 18%);
+  --pill-active-shadow: 0 2px 10px rgb(108 235 213 / 26%);
   --button-primary-bg: linear-gradient(135deg, #6cebd5, #d7fff7);
   --button-primary-hover-bg: linear-gradient(135deg, #8dfff0, #ecfffb);
   --button-primary-color: #04141a;
@@ -114,6 +115,7 @@
   --logo-mark-bg: linear-gradient(135deg, #0d9488, #14b8a6);
   --logo-mark-color: #ffffff;
   --logo-mark-shadow: 0 8px 24px rgb(13 148 136 / 24%);
+  --pill-active-shadow: 0 2px 8px rgb(13 148 136 / 22%);
   --button-primary-bg: linear-gradient(135deg, #0d9488, #14b8a6);
   --button-primary-hover-bg: linear-gradient(135deg, #0f766e, #0d9488);
   --button-primary-color: #ffffff;
@@ -1516,6 +1518,7 @@ ul {
   min-width: 0;
   box-sizing: border-box;
   overflow-x: auto;
+  border-radius: inherit;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   padding: 2px;
@@ -1552,7 +1555,7 @@ ul {
 .issuer-nav__pill.is-active {
   color: var(--logo-mark-color);
   background: var(--logo-mark-bg);
-  box-shadow: var(--logo-mark-shadow);
+  box-shadow: var(--pill-active-shadow);
   border-color: transparent;
 }
 
