@@ -83,4 +83,21 @@ export const certificates: Certificate[] = [
       "Model Evaluation",
     ],
   },
+  {
+    title: "Machine Learning: Perceptrons",
+    issuer: "Codecademy",
+    issuedAt: "2026",
+    image: "certificates/perceptrons.png",
+    summary:
+      "Hoàn thành khóa học Machine Learning về thuật toán Perceptron, tập trung vào mô hình phân loại tuyến tính và cách xây dựng bộ phân loại từ dữ liệu. Thực hành xây dựng, huấn luyện và đánh giá mô hình Perceptron, tìm hiểu cách mô hình cập nhật trọng số dựa trên dữ liệu huấn luyện, đồng thời áp dụng thuật toán vào các bài toán phân loại thực tế.",
+    skills: [
+      "Machine Learning",
+      "Perceptron",
+      "Classification",
+      "Supervised Learning",
+      "Linear Classification",
+      "Model Training",
+      "Model Evaluation",
+    ],
+  },
 ];
