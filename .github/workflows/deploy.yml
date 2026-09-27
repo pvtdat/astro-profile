@@ -68,11 +68,30 @@ jobs:
           echo "GOATCOUNTER_API_TOKEN is configured"
           echo "GOATCOUNTER_API_START=$GOATCOUNTER_API_START"
 
+      - name: Check Supabase environment
+        env:
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL || secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY || secrets.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$PUBLIC_SUPABASE_URL" ]; then
+            echo "::error::PUBLIC_SUPABASE_URL is missing from the github-pages environment"
+            exit 1
+          fi
+
+          if [ -z "$PUBLIC_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::PUBLIC_SUPABASE_PUBLISHABLE_KEY is missing from the github-pages environment"
+            exit 1
+          fi
+
+          echo "Supabase public environment is configured"
+
       - name: Build Astro
         run: npm run build
         env:
           GOATCOUNTER_API_TOKEN: ${{ secrets.GOATCOUNTER_API_TOKEN }}
           GOATCOUNTER_API_START: ${{ vars.GOATCOUNTER_API_START }}
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL || secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY || secrets.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
