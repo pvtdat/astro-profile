@@ -8,6 +8,7 @@ export type Certification = {
   credential_url: string | null;
   description: string | null;
   image_url: string | null;
+  skills: string[];
   featured: boolean;
   display_order: number;
   published: boolean;

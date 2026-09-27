@@ -34,8 +34,9 @@ export function CertificationForm({
           credential_url: certification.credential_url ?? "",
           description: certification.description ?? "",
           image_url: certification.image_url ?? "",
+          skills: certification.skills.join(", "),
         }
-      : { display_order: 0, featured: false, published: true },
+      : { display_order: 0, featured: false, published: true, skills: "" },
   });
   async function submit(values: CertificationFormValues) {
     setSaving(true);
@@ -74,6 +75,10 @@ export function CertificationForm({
         credential_id: values.credential_id || null,
         credential_url: values.credential_url || null,
         description: values.description || null,
+        skills: (values.skills ?? "")
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter(Boolean),
       };
       const result = certification
         ? await supabase
@@ -137,6 +142,17 @@ export function CertificationForm({
         {field("credential_url", "Credential URL", "url")}{" "}
         {field("display_order", "Display order", "number")}
       </div>
+      <label className="block text-sm font-semibold">
+        Skills
+        <input
+          {...register("skills")}
+          placeholder="Machine Learning, Classification, Model Evaluation"
+          className="mt-2 w-full border border-[var(--line)] bg-white px-3 py-3 outline-none focus:border-moss"
+        />
+        <span className="mt-1 block text-xs font-normal text-slate-500">
+          Separate multiple skills with commas.
+        </span>
+      </label>
       <label className="block text-sm font-semibold">
         Description
         <textarea

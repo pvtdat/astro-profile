@@ -6,6 +6,8 @@ export interface Certificate {
   credentialUrl?: string;
   skills: string[];
   summary?: string;
+  featured?: boolean;
+  displayOrder?: number;
 }
 
 // Thay nội dung và ảnh mẫu bên dưới bằng chứng chỉ thật của bạn.

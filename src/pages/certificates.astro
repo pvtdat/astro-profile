@@ -161,6 +161,11 @@ const goatcounterDebugDataAttr = import.meta.env.DEV
   : undefined;
 
 const sortedCertificates = [...certificates].sort((a, b) => {
+  if (a.displayOrder !== undefined || b.displayOrder !== undefined) {
+    const orderA = a.displayOrder ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.displayOrder ?? Number.MAX_SAFE_INTEGER;
+    if (orderA !== orderB) return orderA - orderB;
+  }
   const yearA = Number.parseInt(a.issuedAt, 10) || 0;
   const yearB = Number.parseInt(b.issuedAt, 10) || 0;
   return yearB - yearA;
@@ -197,7 +202,9 @@ const issuerGroups: IssuerGroup[] = Array.from(issuerMap.entries()).map(
   },
 );
 
-const featuredCertificate = sortedCertificates[0];
+const featuredCertificate =
+  sortedCertificates.find((certificate) => certificate.featured) ??
+  sortedCertificates[0];
 const latestIssuedYear =
   sortedCertificates.reduce((latest, certificate) => {
     const issuedYear = Number.parseInt(certificate.issuedAt, 10);

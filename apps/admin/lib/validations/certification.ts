@@ -16,6 +16,7 @@ export const certificationSchema = z.object({
   featured: z.boolean(),
   published: z.boolean(),
   image_url: z.string().optional(),
+  skills: z.string().optional(),
 });
 
 export type CertificationFormValues = z.infer<typeof certificationSchema>;

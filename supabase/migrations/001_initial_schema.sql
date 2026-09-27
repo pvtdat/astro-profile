@@ -17,6 +17,7 @@ create table if not exists public.certifications (
   credential_url text,
   description text,
   image_url text,
+  skills text[] not null default '{}',
   featured boolean not null default false,
   display_order integer not null default 0,
   published boolean not null default true,
