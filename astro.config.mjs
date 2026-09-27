@@ -1,10 +1,8 @@
 import { defineConfig } from "astro/config";
-
-const repositoryName = process.env.GITHUB_REPOSITORY?.split("/")[1];
-const ownerName = process.env.GITHUB_REPOSITORY_OWNER;
-const isUserSite = repositoryName === `${ownerName}.github.io`;
+import vercel from "@astrojs/vercel";
 
 export default defineConfig({
-  site: ownerName ? `https://${ownerName}.github.io` : "http://localhost:4321",
-  base: repositoryName && !isUserSite ? `/${repositoryName}/` : "/",
+  output: "server",
+  adapter: vercel(),
+  site: process.env.PUBLIC_SITE_URL ?? "http://localhost:4321",
 });
