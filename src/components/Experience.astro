@@ -1,28 +1,61 @@
 ---
 import { experiences } from "../data/experience";
+
+const base = import.meta.env.BASE_URL;
+const assetPath = (path: string) => `${base}${path}`;
 ---
 
 <section id="experience" class="section section--muted">
   <div class="container">
-    <p class="eyebrow">Kinh nghiệm</p>
-    <h2>Quá trình làm việc</h2>
+    <p class="eyebrow">Kinh nghiệm &amp; học vấn</p>
+    <h2 class="section-title__heading">Quá trình học tập và làm việc</h2>
 
     <div class="timeline">
       {
         experiences.map((experience) => (
           <article class="timeline__item">
-            <div class="timeline__meta">
+            <div class="timeline__meta font-inter">
+              {experience.logo.src && (
+                <div class="timeline__company-mark">
+                  <img
+                    src={assetPath(experience.logo.src)}
+                    alt={experience.logo.alt}
+                    width="72"
+                    height="72"
+                    loading="lazy"
+                  />
+                </div>
+              )}
               <p>{experience.period}</p>
             </div>
 
             <div class="timeline__content">
-              <h3>{experience.role}</h3>
-              <p class="timeline__company">{experience.company}</p>
+              <div class="timeline__headline">
+                <h3>
+                  {experience.kind === "education"
+                    ? experience.degree
+                    : experience.role}
+                </h3>
+                <p class="timeline__company">
+                  {experience.kind === "education"
+                    ? experience.school
+                    : experience.company}
+                </p>
+                {experience.kind === "education" && (
+                  <p class="timeline__gpa">GPA {experience.gpa}/10</p>
+                )}
+              </div>
               <p>{experience.description}</p>
 
               <ul>
                 {experience.achievements.map((achievement) => (
-                  <li>{achievement}</li>
+                  <li>
+                    {achievement
+                      .split("**")
+                      .map((part, index) =>
+                        index % 2 === 1 ? <strong>{part}</strong> : part,
+                      )}
+                  </li>
                 ))}
               </ul>
             </div>

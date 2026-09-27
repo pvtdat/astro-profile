@@ -6,22 +6,95 @@ interface Props {
   description?: string;
 }
 
-const {
-  title,
-  description = "Personal portfolio built with Astro",
-} = Astro.props;
+const { title, description = "Personal portfolio built with Astro" } =
+  Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
-const faviconPath = `${import.meta.env.BASE_URL}favicon.svg`;
+const canonicalURL = new URL(
+  Astro.url.pathname,
+  Astro.site ?? Astro.url.origin,
+);
+const faviconPath = `${import.meta.env.BASE_URL}icons8-goat-outline-16.png`;
+const goatcounterBaseUrl =
+  import.meta.env.PUBLIC_GOATCOUNTER_URL ?? "https://datpham.goatcounter.com";
+const goatcounterEndpoint =
+  import.meta.env.PUBLIC_GOATCOUNTER_ENDPOINT ?? `${goatcounterBaseUrl}/count`;
 ---
 
 <!doctype html>
 <html lang="vi">
   <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://datpham.goatcounter.com https://gc.zgo.at; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta
+      http-equiv="Referrer-Policy"
+      content="strict-origin-when-cross-origin"
+    />
+    <meta
+      http-equiv="Permissions-Policy"
+      content="camera=(), microphone=(), geolocation=()"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#06101b" />
+    <meta name="color-scheme" content="dark light" />
+
+    <script is:inline>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem("theme");
+          var theme =
+            storedTheme ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark");
+          document.documentElement.setAttribute("data-theme", theme);
+          var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute(
+              "content",
+              theme === "light" ? "#f8fafc" : "#06101b"
+            );
+          }
+        } catch (e) {}
+      })();
+
+      window.addEventListener("storage", function (e) {
+        if (
+          e.key === "theme" &&
+          (e.newValue === "light" || e.newValue === "dark")
+        ) {
+          document.documentElement.setAttribute("data-theme", e.newValue);
+          var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute(
+              "content",
+              e.newValue === "light" ? "#f8fafc" : "#06101b"
+            );
+          }
+        }
+      });
+
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", function (e) {
+          if (!localStorage.getItem("theme")) {
+            var newTheme = e.matches ? "dark" : "light";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+              metaThemeColor.setAttribute(
+                "content",
+                newTheme === "light" ? "#f8fafc" : "#06101b"
+              );
+            }
+          }
+        });
+    </script>
 
     <link rel="icon" type="image/svg+xml" href={faviconPath} />
     <link rel="canonical" href={canonicalURL} />
@@ -30,11 +103,22 @@ const faviconPath = `${import.meta.env.BASE_URL}favicon.svg`;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700;800&family=Raleway:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <title>{title}</title>
   </head>
 
   <body>
     <slot />
+
+    <script
+      data-goatcounter={goatcounterEndpoint}
+      async
+      referrerpolicy="strict-origin-when-cross-origin"
+      src="https://gc.zgo.at/count.js"></script>
   </body>
 </html>

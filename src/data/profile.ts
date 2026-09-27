@@ -17,27 +17,26 @@ export interface Profile {
 }
 
 export const profile: Profile = {
-  name: "Nguyễn Văn A",
-  position: "Full-stack Developer",
+  name: "Dat Pham",
+  position: "Software Engineer",
   greeting: "Xin chào, tôi là",
   summary:
-    "Tôi xây dựng các sản phẩm web có hiệu năng tốt, dễ bảo trì và tập trung vào trải nghiệm người dùng.",
+    "Specialized in Web Development, Backoffice Systems & Computer Vision.",
   about: [
-    "Tôi có kinh nghiệm phát triển ứng dụng frontend và backend bằng TypeScript.",
-    "Tôi quan tâm đến kiến trúc hệ thống, tối ưu hiệu năng và tự động hóa quy trình triển khai.",
+    "Software Engineer với gần 2 năm kinh nghiệm phát triển ứng dụng Web trong lĩnh vực E-commerce, F&B và Healthcare. Tôi đã tham gia xây dựng các hệ thống Backoffice và nền tảng quản trị doanh nghiệp, đồng thời nghiên cứu và phát triển các giải pháp Computer Vision cho y tế. Tôi yêu thích việc xây dựng những sản phẩm có khả năng mở rộng, dễ bảo trì và mang lại giá trị thực tế.",
   ],
-  location: "Thành phố Hồ Chí Minh, Việt Nam",
-  email: "hello@example.com",
-  avatar: "avatar-placeholder.svg",
+  location: "Ho Chi Minh City, Vietnam",
+  email: "phamvantiendat.work@gmail.com",
+  avatar: "avatar-placeholder.jpg",
   cvPath: "cv.pdf",
   socials: [
     {
       label: "GitHub",
-      url: "https://github.com/username",
+      url: "https://github.com/pvtdat",
     },
     {
       label: "LinkedIn",
-      url: "https://www.linkedin.com/in/username",
+      url: "https://www.linkedin.com/in/datphamvantien",
     },
   ],
 };

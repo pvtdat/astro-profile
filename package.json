@@ -3,16 +3,23 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "apps/admin"
+  ],
   "scripts": {
     "dev": "astro dev",
+    "dev:admin": "npm --workspace apps/admin run dev",
     "start": "astro dev",
     "build": "astro build",
+    "build:admin": "npm --workspace apps/admin run build",
+    "migrate:certificates": "node scripts/migrate-certificates-to-supabase.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "astro": "^5.13.0",
+    "@supabase/supabase-js": "^2.57.0",
     "typescript": "^5.9.2"
   },
   "devDependencies": {}

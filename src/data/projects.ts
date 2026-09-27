@@ -1,6 +1,7 @@
 export interface Project {
   name: string;
-  description: string;
+  role: string;
+  description: string[];
   technologies: string[];
   repository?: string;
   demo?: string;
@@ -9,23 +10,43 @@ export interface Project {
 export const projects: Project[] = [
   {
     name: "E-commerce Platform",
-    description:
-      "Hệ thống thương mại điện tử hỗ trợ quản lý sản phẩm, đơn hàng, khách hàng và nhiều cửa hàng.",
-    technologies: ["TypeScript", "Medusa", "PostgreSQL", "Redis"],
-    repository: "https://github.com/username/ecommerce-platform",
+    role: "Frontend Engineer",
+    description: [
+      "Frontend cho nền tảng thương mại điện tử gồm Storefront và Backoffice, phục vụ quản lý sản phẩm, đơn hàng và trải nghiệm mua sắm của khách hàng.",
+    ],
+    technologies: [
+      "TypeScript",
+      "Next.js",
+      "React Hook Form",
+      "GraphQL",
+      "PostgreSQL",
+      "Redis",
+      "Shadcn UI",
+      "Tailwind CSS",
+      "Ant Design",
+      "Docker",
+      "GitLab",
+      "Jenkins",
+      "K6",
+    ],
   },
   {
-    name: "AI Medical Imaging",
-    description:
-      "Pipeline hỗ trợ phân đoạn và phân loại tổn thương trên ảnh y tế.",
-    technologies: ["Python", "nnU-Net", "XGBoost"],
-    repository: "https://github.com/username/medical-imaging-ai",
-  },
-  {
-    name: "Personal Portfolio",
-    description:
-      "Website profile tĩnh, tối ưu hiệu năng và triển khai miễn phí bằng GitHub Pages.",
-    technologies: ["Astro", "TypeScript", "CSS"],
-    demo: "https://username.github.io",
+    name: "E-commerce Zalo Mini App",
+    role: "Frontend Engineer",
+    description: [
+      "Phát triển ứng dụng thương mại điện tử (Mini App) trên nền tảng Zalo, tối ưu hóa trải nghiệm mua sắm nhanh chóng trên thiết bị di động.",
+      "Tích hợp hệ sinh thái Zalo Mini App (ZMP SDK, ZMP UI) để xử lý xác thực người dùng, thanh toán, sổ địa chỉ và thông báo.",
+      "Xây dựng các tính năng mua sắm: danh mục sản phẩm, tìm kiếm, giỏ hàng, combo khuyến mãi, áp dụng voucher, tích điểm thành viên (loyalty) và quản lý đơn hàng.",
+    ],
+    technologies: [
+      "TypeScript",
+      "Zalo Mini App (ZMP SDK)",
+      "ZMP UI",
+      "Zustand",
+      "Tailwind CSS",
+      "Vite",
+      "Embla Carousel",
+      "RESTful API",
+    ],
   },
 ];
