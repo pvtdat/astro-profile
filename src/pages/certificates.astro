@@ -1,12 +1,14 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
-import { certificates } from "../data/certificates";
+import { loadCertificates } from "../lib/certificates";
+import { resolveAssetPath } from "../lib/asset-path";
 import { profile } from "../data/profile";
 import { getSecret } from "astro:env/server";
 
 const base = import.meta.env.BASE_URL;
-const assetPath = (path: string) => `${base}${path}`;
+const assetPath = (path: string) => resolveAssetPath(base, path);
+const certificates = await loadCertificates();
 const currentYear = new Date().getFullYear();
 const normalizePath = (pathname: string) => {
   if (!pathname || pathname === "/") return "/";
