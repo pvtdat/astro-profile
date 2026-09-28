@@ -23,15 +23,17 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
-      <aside className="border-b border-[var(--line)] bg-ink p-6 text-white lg:border-b-0 lg:border-r">
-        <Link
-          href="/dashboard"
-          className="display text-sm uppercase tracking-[0.16em] text-citrus"
-        >
-          DP / Admin
-        </Link>
-        <NavLinks />
-        <div className="mt-16 border-t border-white/15 pt-5 text-xs text-white/60">
+      <aside className="border-b border-[var(--line)] bg-ink p-6 text-white lg:border-b-0 lg:border-r h-full flex flex-col justify-between">
+        <div>
+          <Link
+            href="/dashboard"
+            className="display text-sm uppercase tracking-[0.16em] text-citrus"
+          >
+            Admin Workspace
+          </Link>
+          <NavLinks />
+        </div>
+        <div className="border-t border-white/15 pt-5 text-xs text-white/60">
           <p className="mb-3 truncate">{user.email}</p>
           <LogoutButton />
         </div>
