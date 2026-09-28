@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { PlusIcon } from "@/components/icon";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -28,9 +29,9 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/certifications/new"
-          className="bg-ink px-4 py-3 text-sm font-bold text-white hover:bg-moss"
+          className="flex flex-row gap-2 bg-ink px-4 py-3 text-sm font-bold text-white hover:bg-moss"
         >
-          + Add certification
+          <PlusIcon /> <span>Add certification</span>
         </Link>
       </div>
       {error ? (

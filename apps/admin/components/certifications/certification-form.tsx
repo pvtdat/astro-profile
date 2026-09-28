@@ -18,6 +18,11 @@ export function CertificationForm({
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    certification?.image_url || null,
+  );
+  const [isNewUpload, setIsNewUpload] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -29,7 +34,9 @@ export function CertificationForm({
       ? {
           ...certification,
           category: certification.category ?? "",
-          issue_date: certification.issue_date ?? "",
+          issue_date: certification.issue_date
+            ? certification.issue_date.split("T")[0]
+            : "",
           credential_id: certification.credential_id ?? "",
           credential_url: certification.credential_url ?? "",
           description: certification.description ?? "",
@@ -38,12 +45,35 @@ export function CertificationForm({
         }
       : { display_order: 0, featured: false, published: true, skills: "" },
   });
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setValue("image_url", file.name, { shouldValidate: true });
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+      setIsNewUpload(true);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setPreviewUrl(null);
+    setIsNewUpload(false);
+    setValue("image_url", "");
+    const fileInput = document.querySelector<HTMLInputElement>("#image");
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
+
   async function submit(values: CertificationFormValues) {
     setSaving(true);
     setMessage(null);
     try {
       const supabase = createClient();
-      let imageUrl = values.image_url;
+      let imageUrl = previewUrl
+        ? certification?.image_url || values.image_url
+        : null;
       const file = (document.querySelector<HTMLInputElement>("#image")?.files ??
         [])[0];
 
@@ -102,21 +132,30 @@ export function CertificationForm({
       setSaving(false);
     }
   }
+
   const field = (
     name: keyof CertificationFormValues,
     label: string,
     type = "text",
+    placeholder?: string,
+    helperText?: string,
   ) => (
     <label className="block text-sm font-semibold">
       {label}
       <input
         type={type}
+        placeholder={placeholder}
         {...register(
           name,
           type === "number" ? { valueAsNumber: true } : undefined,
         )}
-        className="mt-2 w-full border border-[var(--line)] bg-white px-3 py-3 outline-none focus:border-moss"
+        className="mt-2 w-full border border-[var(--line)] bg-white px-3 py-3 font-normal outline-none placeholder:font-light placeholder:text-slate-400 focus:border-moss"
       />
+      {helperText && (
+        <span className="mt-1 block text-xs font-normal text-slate-500">
+          {helperText}
+        </span>
+      )}
       {errors[name] && (
         <span className="mt-1 block text-xs font-normal text-red-700">
           {errors[name]?.message}
@@ -124,6 +163,7 @@ export function CertificationForm({
       )}
     </label>
   );
+
   return (
     <form onSubmit={handleSubmit(submit)} className="max-w-3xl space-y-6">
       {message && (
@@ -135,19 +175,30 @@ export function CertificationForm({
         </p>
       )}
       <div className="grid gap-5 md:grid-cols-2">
-        {field("title", "Title")} {field("issuer", "Issuer")}{" "}
-        {field("category", "Category")}{" "}
-        {field("issue_date", "Issue date", "date")}{" "}
-        {field("credential_id", "Credential ID")}{" "}
-        {field("credential_url", "Credential URL", "url")}{" "}
-        {field("display_order", "Display order", "number")}
+        {field(
+          "title",
+          "Title",
+          "text",
+          "Machine Learning: Introduction with Regression",
+        )}
+        {field("issuer", "Issuer", "text", "Codecademy")}
+        {field("category", "Category", "text", "Machine Learning")}
+        {field("issue_date", "Issue date", "date")}
+        {field("credential_id", "Credential ID", "text", "CC-ML-REG-2026")}
+        {field(
+          "credential_url",
+          "Credential URL",
+          "url",
+          "https://www.codecademy.com/certificates/...",
+        )}
+        {field("display_order", "Display order", "number", "0")}
       </div>
       <label className="block text-sm font-semibold">
         Skills
         <input
           {...register("skills")}
-          placeholder="Machine Learning, Classification, Model Evaluation"
-          className="mt-2 w-full border border-[var(--line)] bg-white px-3 py-3 outline-none focus:border-moss"
+          placeholder="Machine Learning, Linear Regression, Model Evaluation"
+          className="mt-2 w-full border border-[var(--line)] bg-white px-3 py-3 font-normal outline-none placeholder:font-light placeholder:text-slate-400 focus:border-moss"
         />
         <span className="mt-1 block text-xs font-normal text-slate-500">
           Separate multiple skills with commas.
@@ -158,26 +209,78 @@ export function CertificationForm({
         <textarea
           {...register("description")}
           rows={5}
-          className="mt-2 w-full border border-[var(--line)] bg-white px-3 py-3 outline-none focus:border-moss"
+          placeholder="Hoàn thành khóa học Machine Learning với trọng tâm Linear Regression, xây dựng và đánh giá độ chính xác của mô hình..."
+          className="mt-2 w-full border border-[var(--line)] bg-white px-3 py-3 font-normal outline-none placeholder:font-light placeholder:text-slate-400 focus:border-moss"
         />
       </label>
-      <label className="block text-sm font-semibold">
-        Certificate image
-        <input
-          id="image"
-          type="file"
-          accept=".jpg,.jpeg,.png,.webp"
-          onChange={(event) =>
-            setValue("image_url", event.target.files?.[0]?.name ?? "")
-          }
-          className="mt-2 block w-full border border-dashed border-[var(--line)] bg-white px-3 py-4 text-sm"
-        />
-      </label>
+
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold">
+          Certificate image
+          <input
+            id="image"
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            onChange={handleImageChange}
+            className="mt-2 block w-full border border-dashed border-[var(--line)] bg-white px-3 py-4 text-sm cursor-pointer"
+          />
+        </label>
+        <span className="block text-xs text-slate-500">
+          Accepts JPG, PNG, WEBP up to 5 MB.
+        </span>
+
+        {previewUrl && (
+          <div className="mt-3 rounded border border-[var(--line)] bg-white p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-moss">
+                  Image Review / Preview
+                </span>
+                {isNewUpload ? (
+                  <span className="rounded bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+                    New file chosen
+                  </span>
+                ) : (
+                  <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
+                    Current image
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <a
+                  href={previewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold text-moss hover:underline"
+                >
+                  Open in new tab ↗
+                </a>
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="text-xs font-semibold text-red-600 hover:text-red-800 hover:underline"
+                >
+                  Remove image
+                </button>
+              </div>
+            </div>
+            <div className="flex max-h-80 w-full items-center justify-center overflow-hidden rounded border border-[var(--line)] bg-[var(--paper)] p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewUrl}
+                alt="Certificate preview"
+                className="max-h-72 max-w-full rounded object-contain shadow-sm"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="flex gap-6">
-        <label className="flex items-center gap-2 text-sm font-semibold">
+        <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer">
           <input type="checkbox" {...register("featured")} /> Featured
         </label>
-        <label className="flex items-center gap-2 text-sm font-semibold">
+        <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer">
           <input type="checkbox" {...register("published")} /> Published
         </label>
       </div>

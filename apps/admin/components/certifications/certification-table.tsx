@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { formatDateDDMMYYYY } from "@/lib/utils";
 import type { Certification } from "@/types/database";
 
 export function CertificationTable({
@@ -49,7 +50,7 @@ export function CertificationTable({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search title or issuer"
-          className="min-w-[220px] flex-1 border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm outline-none focus:border-moss"
+          className="min-w-[220px] flex-1 border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm font-normal outline-none placeholder:font-light placeholder:text-slate-400 focus:border-moss"
         />
         <select
           value={filter}
@@ -83,10 +84,17 @@ export function CertificationTable({
             <tbody>
               {rows.map((item) => (
                 <tr key={item.id} className="border-t border-[var(--line)]">
-                  <td className="px-5 py-4 font-semibold">{item.title}</td>
+                  <td className="px-5 py-4 font-semibold">
+                    <Link
+                      href={`/certifications/${item.id}`}
+                      className="mr-4 font-semibold text-moss hover:underline"
+                    >
+                      {item.title}
+                    </Link>
+                  </td>
                   <td className="px-5 py-4 text-slate-600">{item.issuer}</td>
                   <td className="px-5 py-4 text-slate-600">
-                    {item.issue_date ?? "—"}
+                    {formatDateDDMMYYYY(item.issue_date)}
                   </td>
                   <td className="px-5 py-4">
                     {item.published ? (
