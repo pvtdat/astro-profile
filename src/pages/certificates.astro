@@ -281,6 +281,7 @@ const uniqueIssuers = issuerGroups.length;
           data-certificate-stats
           data-certificates-path={certificateVisitPath}
           data-profile-path={profileVisitPath}
+          data-goatcounter-base-url={goatcounterBaseUrl}
           data-goatcounter-debug={goatcounterDebugDataAttr}
         >
           <div class="certificate-live-stat">
@@ -920,6 +921,61 @@ const uniqueIssuers = issuerGroups.length;
     const statsRoot = document.querySelector<HTMLElement>(
       "[data-certificate-stats]",
     );
+
+    const formatClientVisitCount = (value: unknown) => {
+      const parsed =
+        typeof value === "number"
+          ? value
+          : Number.parseInt(String(value ?? ""), 10);
+      return Number.isFinite(parsed) ? parsed.toLocaleString("en-US") : null;
+    };
+
+    const loadPublicVisitCounts = async () => {
+      if (!statsRoot) return;
+
+      const baseUrl = statsRoot.dataset.goatcounterBaseUrl;
+      const paths = {
+        certificates: statsRoot.dataset.certificatesPath,
+        profile: statsRoot.dataset.profilePath,
+      };
+
+      if (!baseUrl) return;
+
+      await Promise.all(
+        Object.entries(paths).map(async ([name, path]) => {
+          if (!path) return;
+
+          try {
+            const response = await fetch(
+              `${baseUrl}/counter/${encodeURIComponent(path)}.json`,
+            );
+            if (!response.ok) return;
+
+            const payload = (await response.json()) as Record<string, unknown>;
+            const count = formatClientVisitCount(
+              payload.count ?? payload.hits ?? payload.total,
+            );
+            const value = statsRoot.querySelector<HTMLElement>(
+              `[data-stat-value="${name}"]`,
+            );
+
+            if (count && value && value.textContent?.trim() === "N/A") {
+              value.textContent = count;
+            }
+          } catch (error) {
+            if (import.meta.env.DEV) {
+              console.debug("[GoatCounter Web] Public counter unavailable", {
+                path,
+                error,
+              });
+            }
+          }
+        }),
+      );
+    };
+
+    void loadPublicVisitCounts();
+
     const debugRaw = statsRoot?.dataset.goatcounterDebug;
 
     if (import.meta.env.DEV && debugRaw) {
